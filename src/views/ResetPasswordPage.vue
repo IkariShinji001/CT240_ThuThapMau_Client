@@ -2,14 +2,14 @@
   <q-page>
     <div class="wrapper">
       <div class="container">
-        <h1>Đặt lại mật khẩu</h1>
+        <h1 style="color: white;">Đặt lại mật khẩu</h1>
         <section class="form-reset">
           <div class="form-box">
             <h2>Đặt lại mật khẩu</h2>
               <q-input
                 type="password"
                 class="input"
-                v-model="password"
+                v-model="user.user_password"
                 outlined
                 label="New password"
               >
@@ -21,7 +21,7 @@
               <q-input
                 type="password"
                 class="input"
-                v-model="confirmPassword"
+                v-model="repasswd"
                 outlined
                 label="Confirm password"
               >
@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref,reactive } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 import userService from "../services/user.service";
@@ -56,11 +56,10 @@ export default {
 
     const user = reactive({
       user_password: '',
-      repasswd: '',
     });
-
+    const repasswd = ref() 
     const isMatchedPassword = (user_password, repasswd) => {
-      return user.user_password === user.repasswd;
+      return user_password === repasswd;
     };
     
     const handleResetPassword = async () => {
@@ -68,6 +67,7 @@ export default {
         toast.warning("Mật khẩu không trùng khớp");
         return;
       }
+
       try {
         await userService.resetPassword(route.query.user_id, password.value);
         toast.success("Bạn đã đổi mật khẩu thành công");
@@ -79,7 +79,7 @@ export default {
     };
 
     return {
-      user_password,
+      user,
       repasswd,
       handleResetPassword,
     };
@@ -108,6 +108,7 @@ img {
 }
 
 .form-reset {
+  background-color: azure !important;
   margin: 0 auto;
   width: 90%;
   grid-area: reset;
@@ -125,7 +126,8 @@ img {
 }
 
 .container {
-  background-color: rgba(240, 248, 255, 0.737) !important;
+  /* background-color: rgba(240, 248, 255, 0.737) !important; */
+  background-image: url('../assets/background_login.jpg') !important;
   min-height: 100vh;
   display: grid;
   grid-template-areas: "title title"
