@@ -12,10 +12,10 @@ const router = createRouter({
       },
       component: () => import("../layouts/DashBoard.vue"),
     },
-    {
-      path: "/socket",
-      component: () => import("../views/TestSocket.vue"),
-    },
+    // {
+    //   path: "/socket",
+    //   component: () => import("../views/TestSocket.vue"),
+    // },
     {
       path: "/login",
       name: "login",
