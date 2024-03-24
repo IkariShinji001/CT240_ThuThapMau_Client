@@ -67,7 +67,8 @@ export default {
 
     const handleLogin = async () =>{
       try {
-        await userService.login(user);
+        const userLogin = await userService.login(user);
+        localStorage.setItem("user", JSON.stringify(userLogin));
         router.push({path: '/'})
         toast.success("Đăng nhập thành công");
       } catch (error) {

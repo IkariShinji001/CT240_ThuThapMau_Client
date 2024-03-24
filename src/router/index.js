@@ -12,16 +12,7 @@ const router = createRouter({
       },
       children: [
         {
-          path: '/',
-          name: "Main",
-          meta: {
-            title: 'Trang chủ',
-            requiresAuth: true,
-          },
-          component: () => import("../views/ProjectDetail.vue")
-        },
-        {
-          path: 'projects/:id',
+          path: '/projects/:id',
           name: 'ProjectDetail',
           meta:{
             title: 'Dự án'
