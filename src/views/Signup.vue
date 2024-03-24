@@ -4,10 +4,35 @@
         <h1>Đăng Ký</h1>
         <section class="form-signup">
           <div class="form-box">
-            <h2>Đăng Ký</h2>
+            <h3>Đăng Ký</h3>
+            <div class="form2col">
   
+            <q-input
+                class="input item1"
+                v-model="user.user_full_name"
+                type="text"
+                outlined
+                label="Username"
+              >
+              <template v-slot:prepend>
+                  <q-icon name="home" />
+                </template>
+              </q-input>
+
               <q-input
-                class="input"
+                class="input item1"
+                v-model="user.user_phone_number"
+                type="text"
+                outlined
+                label="phone number"
+              >
+              <template v-slot:prepend>
+                  <q-icon name="phone" />
+                </template>
+              </q-input>
+
+              <q-input
+                class="input item2"
                 v-model="user.user_email"
                 type="text"
                 outlined
@@ -20,7 +45,7 @@
               
   
             <q-input
-                class="input"
+                class="input item2"
                 v-model="user.user_password"
                 type="text"
                 outlined
@@ -31,8 +56,8 @@
                 </template>
             </q-input>
                 <q-input
-                class="input"
-                v-model="user.repassword"
+                class="input item2"
+                v-model="user.repasswd"
                 type="text"
                 outlined
                 label="rePassword"
@@ -41,7 +66,11 @@
                   <q-icon name="password" />
                 </template>
               </q-input>
+
+            </div>
+            <div class="button">
               <q-btn class="btn" @click="handleSignup">Đăng Ký</q-btn>
+            </div>  
               <section class="func-box">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
@@ -50,7 +79,7 @@
                 <router-link class="login-pw" to="/login"
                   >Đã có tài khoản</router-link>
               </section>
-              
+            
               
           </div>
         </section>
@@ -72,6 +101,8 @@
     const toast = useToast();
     const router = useRouter()
     const user = reactive({
+      user_full_name:'',
+      user_phone_number:'',
       user_email: '',
       user_password: '',
       repasswd: '',
@@ -79,14 +110,17 @@
 
     const handleSignup = async () =>{
       try {
-        if (user.user_password !== user.repasswd) {
+        if (user.user_full_name == '') toast.error("Không được để trống username");
+        else if (user.user_phone_number == '') toast.error("Không được để trống số điện thoại");
+        else if (user.user_email == '') toast.error("Không được để trống email");
+        else if (user.user_password !== user.repasswd) {
           toast.error("Mật khẩu nhập lại không đúng");
         }
         await userService.login(user); // login => signup
         router.push({path: '/'})
         toast.success("Đăng ký thành công");
       } catch (error) {
-        toast.error("Sai email hoặc mật khẩu");
+        toast.error("Sai thông tin hoặc mật khẩu");
         console.error(error);
       }
     }
@@ -102,16 +136,32 @@
   <style scoped>
   .image-container {
     width: 100%;
-  
     display: flex;
     justify-content: center;
     grid-area: img;
   }
-  
+
   .func-box{
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 2px;
+  }
+
+  .form2col{
+    display: flex;
+    flex-wrap: wrap;
+
+  }
+
+  .item1{
+    width: 50%;
+    flex: 0 0 calc(50%);
+    padding: 0 15px;
+  }
+
+  .item2{
+    width: 100%;
+    padding: 0 30px;
   }
   
   img {
@@ -120,11 +170,10 @@
     height: 50%;
   }
   
-  form-box,h2{
+  form-box,h3{
     font-size: 2em;
     color: #162938;
     text-align: center;
-  
   }
   
   h1 {
@@ -135,22 +184,29 @@
     grid-area: title;
   }
   
+  .button{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+  }
+
   .input {
-    background-color: white;
-    margin-top: 15px;
+    /* background-color: white; */
+    /* margin-top: px; */
     font-size: 17px;
   
     position: relative;
     width: 100%;
-    height: 50px;
-    border-bottom: 2px solid #162938;
-    margin: 30px 0;
+    height: 40px;
+    /* border-bottom: 2px solid #162938; */
+    margin: 20px 0;
     
   }
   
   
   .container {
-    background-color: rgba(148, 196, 158, 0.675) !important;
+    /* background-color: rgba(148, 196, 158, 0.675); */
+    background-image: url('../assets/background_login.jpg') !important;
     min-height: 100vh;
     display: grid;
     grid-template-areas: "title title"
@@ -158,13 +214,13 @@
   }
   
   .form-signup {
-  background-color: azure !important;
+    background-color: azure !important;
     margin: 0 auto;
     width: 90%;
     grid-area: signup;
     position: relative;
-    width: 400px;
-    height: 480px;
+    width: 600px;
+    height: 550px;
     background: transparent;
     border: 2px solid rgba(255, 255, 255, 0.5);
     border-radius: 30px;
@@ -188,8 +244,9 @@
   }
   
   .btn {
-    width: 100%;
-    margin: 30px 0;
+    width: 50%;
+    display: flex;
+    margin: 20px 0;
     background-color: #1976d2;
     font-size: 18px;
     color: white;

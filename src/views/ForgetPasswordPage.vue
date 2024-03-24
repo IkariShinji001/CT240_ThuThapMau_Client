@@ -2,7 +2,7 @@
   <q-page>
     <div class="wrapper">
       <div class="container">
-        <h1>Quên mật khẩu</h1>
+        <h1 style="color: white;">Quên mật khẩu</h1>
         <div class="image-container">
           <img src="../assets/THANH DUY BUFFET.png" />
         </div>
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import userService from "../services/user.service";
@@ -62,7 +62,7 @@ export default {
 
 <style scoped>
 .wrapper {
-  background-color: aliceblue;
+  background-image: url('../assets/background_login.jpg') !important;
   min-height: 100vh;
 }
 .container {
@@ -71,6 +71,7 @@ export default {
 }
 
 .forgot-container {
+  background-color: azure !important;
   margin: 0 auto;
   width: 90%;
   grid-area: forgot;
@@ -94,7 +95,6 @@ form-box,h2{
 }
 
 .container {
-  background-color: rgba(240, 248, 255, 0.737) !important;
   min-height: 100vh;
   display: grid;
   grid-template-areas: "title title"
