@@ -4,6 +4,15 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: "/",
+      name: "Dashboard",
+      meta: {
+        title: "Dashboard",
+        requiresAuth: true,
+      },
+      component: () => import("../layouts/DashBoard.vue"),
+    },
+    {
       path: "/socket",
       component: () => import("../views/TestSocket.vue"),
     },
