@@ -13,11 +13,13 @@
               Vui lòng nhập email đã được cấp tài khoản vào để được đặt lại mật khẩu
             </p>
 
-            <q-input class="input" v-model="user.user_email" outlined label="Email">
-              <template v-slot:prepend>
-                <q-icon name="email" />
-              </template>
-            </q-input>
+            <div class="btn-container">
+              <q-input class="input" v-model="user.user_email" outlined label="Email">
+                <template v-slot:prepend>
+                  <q-icon name="email" />
+                </template>
+              </q-input>
+            </div>
 
             <q-btn class="btn-submit" color="primary" @click="handleForgetPassword"
               >Xác nhận</q-btn>
@@ -71,12 +73,12 @@ export default {
 }
 
 .forgot-container {
-  background-color: azure !important;
+  background-color: white !important;
   margin: 0 auto;
   width: 90%;
   grid-area: forgot;
   position: relative;
-  width: 400px;
+  width: 500px;
   height: 440px;
   background: transparent;
   border: 2px solid rgba(255, 255, 255, 0.5);
@@ -135,8 +137,12 @@ p {
   margin: 30px 20px;
   font-size: 18px;
   border: 10px;
+  width: 90%;
 }
-
+.btn-container{
+  display: flex;
+  justify-content: center;
+}
 .btn-submit {
   padding: 10px 70px;
   display: flex;

@@ -6,8 +6,7 @@ class UserService {
 
   async login(user) {
     const data = (await api.post(`${this.path}/login`, user)).data;
-    console.log(data.userData)
-    return data.userData;
+    return data;
   }
 
   async verifyUser() {
