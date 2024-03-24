@@ -1,7 +1,7 @@
 import api from "./api.service";
 class UserService {
   constructor() {
-    this.path = "/users";
+    this.path = "/public";
   }
 
   async login(user) {

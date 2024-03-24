@@ -39,6 +39,13 @@ const router = createRouter({
       },
       component: () => import("../views/ResetPasswordPage.vue"),
     },
+    {
+      path: "/signup",
+      meta: {
+        title: "Đăng ký tài khoản",
+      },
+      component: () => import("../views/Signup.vue"),
+    },
     // {
     //   path: '/:pathMatch(.*)*',
     //   name: 'notFound',

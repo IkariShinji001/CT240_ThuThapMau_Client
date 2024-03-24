@@ -1,32 +1,51 @@
 <template>
   <q-page>
     <div class="container">
+      <h1>Đăng nhập</h1>
+      <section class="form-login">
+        <div class="form-box">
+          <h2>Đăng nhập</h2>
+
+            <q-input
+              class="input"
+              v-model="user.user_email"
+              type="text"
+              outlined
+              label="Email"
+            >
+            <template v-slot:prepend>
+                <q-icon name="email" />
+              </template>
+            </q-input>
+
+            <q-input
+              class="input"
+              v-model="user.user_password"
+              type="text"
+              outlined
+              label="Password"
+            >
+            <template v-slot:prepend>
+                <q-icon name="password" />
+              </template>
+            </q-input>
+            <q-btn class="btn" @click="handleLogin">Đăng nhập</q-btn>
+            <section class="func-box">
+              <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
+                  <label class="form-check-label" for="form2Example31"> Remember me </label>
+              </div>
+              <router-link class="forget-pw" to="/forget-password"
+                >Quên mật khẩu</router-link>
+            </section>
+            
+              
+            
+        </div>
+      </section>
       <div class="image-container">
         <img src="../assets/THANH DUY BUFFET.png" />
       </div>
-
-      <h1>Đăng nhập</h1>
-      <section class="form-login">
-        <q-input
-          class="input"
-          v-model="user.email"
-          type="text"
-          outlined
-          label="Email"
-        >
-        </q-input>
-        <q-input
-          class="input"
-          v-model="user.password"
-          type="text"
-          outlined
-          label="Password"
-        ></q-input>
-        <q-btn class="btn" @click="handleLogin">Đăng nhập</q-btn>
-        <router-link class="forget-pw" to="/forget-password"
-          >Quên mật khẩu</router-link
-        >
-      </section>
     </div>
   </q-page>
 </template>
@@ -42,18 +61,13 @@ export default {
     const toast = useToast();
     const router = useRouter()
     const user = reactive({
-      email: '',
-      password: '',
+      user_email: '',
+      user_password: '',
     });
 
     const handleLogin = async () =>{
       try {
-        const userData = await userService.login(user);
-        if(userData.role === 'chef'){
-          router.push({path: '/kitchen'});
-          toast.success("Đăng nhập thành công");
-          return;
-        }
+        await userService.login(user);
         router.push({path: '/'})
         toast.success("Đăng nhập thành công");
       } catch (error) {
@@ -73,13 +87,29 @@ export default {
 <style scoped>
 .image-container {
   width: 100%;
+
   display: flex;
   justify-content: center;
+  grid-area: img;
+}
+
+.func-box{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 2px;
 }
 
 img {
-  margin-top: 30px;
-  width: 30%;
+  margin-top: 10px;
+  width: 60%;
+  height: 50%;
+}
+
+form-box,h2{
+  font-size: 2em;
+  color: #162938;
+  text-align: center;
+
 }
 
 h1 {
@@ -87,22 +117,47 @@ h1 {
   text-align: center;
   font-weight: bolder;
   margin: 10px 0 !important;
+  grid-area: title;
 }
 
 .input {
   background-color: white;
   margin-top: 15px;
   font-size: 17px;
+
+  position: relative;
+  width: 100%;
+  height: 50px;
+  border-bottom: 2px solid #162938;
+  margin: 30px 0;
+  
 }
 
+
 .container {
-  background-color: rgba(240, 248, 255, 0.737) !important;
+  background-color: rgba(148, 196, 158, 0.675) !important;
   min-height: 100vh;
+  display: grid;
+  grid-template-areas: "title title"
+                      "img login";
 }
 
 .form-login {
+background-color: azure !important;
   margin: 0 auto;
   width: 90%;
+  grid-area: login;
+  position: relative;
+  width: 400px;
+  height: 440px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 30px;
+  backdrop-filter: blur(100px);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .forget-pw {
@@ -113,6 +168,10 @@ h1 {
   margin: 10px 0;
 }
 
+.forget-pw:hover{
+  color: gray;
+}
+
 .btn {
   width: 100%;
   margin: 30px 0;
@@ -121,4 +180,11 @@ h1 {
   color: white;
   font-weight: bolder;
 }
+
+.btn:active{
+  color:red;
+  background-color: white;
+}
+
+
 </style>
