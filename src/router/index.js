@@ -10,19 +10,31 @@ const router = createRouter({
         title: "Dashboard",
         requiresAuth: true,
       },
-      component: () => import("../layouts/DashBoard.vue"),
-    },
-
-    // them test Dashboard  
-    {
-      path: "/test",
-      name: "testDashboard",
-      meta: {
-        title: "testDashboard",
-        requiresAuth: true,
-      },
+      children: [
+        // {
+        //   path: "/",
+        //   name: "Main",
+        //   meta: {
+        //     title: "Trang chủ",
+        //     requiresAuth: true,
+        //   },
+        //   component: () => import("../views/ProjectDetail.vue"),
+        // },
+        {
+          path: "projects/:id",
+          name: "ProjectDetail",
+          meta: {
+            title: "Dự án",
+          },
+          component: () => import("../views/ProjectDetail.vue"),
+        },
+      ],
       component: () => import("../layouts/testDBoard.vue"),
     },
+    // {
+    //   path: "/socket",
+    //   component: () => import("../views/TestSocket.vue"),
+    // },
     {
       path: "/login",
       name: "login",

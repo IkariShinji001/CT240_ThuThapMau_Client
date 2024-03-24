@@ -136,7 +136,7 @@ h1 {
 
 .container {
   /* background-color: rgba(148, 196, 158, 0.675) !important; */
-  /* background: #DFF5FF; */
+  background-image: url('../assets/background_login.jpg') !important;
   min-height: 100vh;
   display: grid;
   grid-template-areas: "title title"

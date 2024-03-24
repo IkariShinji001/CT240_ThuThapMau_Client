@@ -58,69 +58,101 @@
       class="bg-grey-2"
       :width="240"
     >
-      <q-scroll-area class="fit side-bar">
+      <q-scroll-area class="fit side-bar-container">
         <q-item-label header class="text-uppercase side-bar-text">
-            Projects
-        <q-separator/>
+          Your Projects
+          <q-separator />
         </q-item-label>
-        <!-- <q-list padding>
-                    <q-item v-for="link in links1" :key="link.text" v-ripple clickable>
-                        <q-item-section avatar>
-                            <q-icon color="grey" :name="link.icon" />
-                        </q-item-section>
-                        <q-item-section>
-                            <q-item-label>{{ link.text }}</q-item-label>
-                        </q-item-section>
-                    </q-item>
-                </q-list> -->
+        <q-list padding>
+          <q-item
+            v-for="pro in project"
+            :key="pro.project_id"
+            v-ripple
+            clickable
+            class="list-side-bar"
+          >
+            <q-item-section class="item-side-bar">
+              <q-item-label class="list-your-project">
+                <q-icon name="task" size="36px"></q-icon>
+                <span class="your-project-name">
+                  {{ pro.project_name }}
+                </span></q-item-label
+              >
+            </q-item-section>
+          </q-item>
+        </q-list>
       </q-scroll-area>
     </q-drawer>
 
     <q-page-container>
+      <div class="wrapper">
+        {{ project }}
+      </div>
       <router-view />
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
-import { ref } from "vue";
-
-const axios = require("axios")
+import projectService from "../services/project.service";
+import { onBeforeMount, ref } from "vue";
+import { useRoute } from "vue-router";
 
 export default {
-
   setup() {
+    const route = useRoute();
+    const projectName = ref();
+    const project = ref();
+
     const leftDrawerOpen = ref(false);
     const search = ref("");
 
     function toggleLeftDrawer() {
       leftDrawerOpen.value = !leftDrawerOpen.value;
     }
-    
-    async function getProjects(){
-        await axios.getProjects("/");
-    }
+
+    const userId = route.params.id;
+
+    onBeforeMount(async () => {
+      project.value = await projectService.getAllProject();
+    });
 
     return {
       leftDrawerOpen,
       search,
       toggleLeftDrawer,
 
+      project,
+      projectName,
     };
   },
 };
 </script>
 
-
 <style scoped>
-.side-bar{
+.side-bar-container {
   background-color: var(--secondary-color);
 }
-.side-bar-text{
-    text-align: center;
-    color: white;
-    font-size: larger;
-    font-weight: bold;
+.side-bar-text {
+  text-align: center;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
 }
-
+.list-your-project {
+  color: white;
+  font-weight: bold;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+}
+.your-project-name {
+  margin-left: 10px;
+}
+.list-side-bar {
+  padding: 0 0;
+}
+.item-side-bar:hover {
+  background: #103049;
+}
 </style>
