@@ -54,15 +54,17 @@ export default {
     const route = useRoute();
     const toast = useToast();
 
-    const password = ref();
-    const confirmPassword = ref();
+    const user = reactive({
+      user_password: '',
+      repasswd: '',
+    });
 
-    const isMatchedPassword = (password, confirmPassword) => {
-      return password === confirmPassword;
+    const isMatchedPassword = (user_password, repasswd) => {
+      return user.user_password === user.repasswd;
     };
     
     const handleResetPassword = async () => {
-      if (!isMatchedPassword(password.value, confirmPassword.value)) {
+      if (!isMatchedPassword(user.user_password.value, user.repasswd.value)) {
         toast.warning("Mật khẩu không trùng khớp");
         return;
       }
@@ -77,8 +79,8 @@ export default {
     };
 
     return {
-      password,
-      confirmPassword,
+      user_password,
+      repasswd,
       handleResetPassword,
     };
   },

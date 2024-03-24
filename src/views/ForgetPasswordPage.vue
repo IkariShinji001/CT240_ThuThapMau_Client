@@ -13,7 +13,7 @@
               Vui lòng nhập email đã được cấp tài khoản vào để được đặt lại mật khẩu
             </p>
 
-            <q-input class="input" v-model="email" outlined label="Email">
+            <q-input class="input" v-model="user.user_email" outlined label="Email">
               <template v-slot:prepend>
                 <q-icon name="email" />
               </template>
@@ -39,19 +39,21 @@ export default {
     const router = useRouter();
     const toast = useToast();
 
-    const email = ref();
+    const user = reactive({
+      user_email: '',
+    });
 
     const handleForgetPassword = async () => {
       try {
-        await userService.forgetPassword(email.value);
-        toast.success("Vui lòng kiểm tra email " + email.value);
+        await userService.forgetPassword(user.user_email.value);
+        toast.success("Vui lòng kiểm tra email " + user.user_email.value);
       } catch (error) {
         console.log(error);
       }
     };
 
     return {
-      email,
+      user,
       handleForgetPassword,
     };
   },
