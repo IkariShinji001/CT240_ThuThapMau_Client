@@ -12,10 +12,10 @@ const router = createRouter({
       },
       component: () => import("../layouts/DashBoard.vue"),
     },
-    {
-      path: "/socket",
-      component: () => import("../views/TestSocket.vue"),
-    },
+    // {
+    //   path: "/socket",
+    //   component: () => import("../views/TestSocket.vue"),
+    // },
     {
       path: "/login",
       name: "login",
@@ -45,6 +45,13 @@ const router = createRouter({
         title: "Đăng ký tài khoản",
       },
       component: () => import("../views/Signup.vue"),
+    },
+    {
+      path: "/user",
+      meta: {
+        title: "Thông tin người dùng",
+      },
+      component: () => import("../views/User.vue"),
     },
     // {
     //   path: '/:pathMatch(.*)*',
