@@ -4,10 +4,6 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: "/socket",
-      component: () => import("../views/TestSocket.vue"),
-    },
-    {
       path: "/login",
       name: "login",
       meta: {
@@ -29,6 +25,13 @@ const router = createRouter({
         title: "Đặt lại mật khẩu",
       },
       component: () => import("../views/ResetPasswordPage.vue"),
+    },
+    {
+      path: "/signup",
+      meta: {
+        title: "Đăng ký tài khoản",
+      },
+      component: () => import("../views/Signup.vue"),
     },
     // {
     //   path: '/:pathMatch(.*)*',
