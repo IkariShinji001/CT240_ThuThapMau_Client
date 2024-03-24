@@ -135,7 +135,8 @@ h1 {
 
 
 .container {
-  background-color: rgba(148, 196, 158, 0.675) !important;
+  /* background-color: rgba(148, 196, 158, 0.675) !important; */
+  /* background: #DFF5FF; */
   min-height: 100vh;
   display: grid;
   grid-template-areas: "title title"

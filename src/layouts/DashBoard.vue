@@ -9,12 +9,8 @@
     <q-drawer
       class="drawer"
       v-model="drawer"
-      :breakpoint="600"
-      :mini="miniState"
       show-if-above
       bordered
-      @mouseover="miniState = false"
-      @mouseout="miniState = true"
     >
       <q-list padding>
         <router-link to="/">

@@ -12,9 +12,16 @@ const router = createRouter({
       },
       component: () => import("../layouts/DashBoard.vue"),
     },
+
+    // them test Dashboard  
     {
-      path: "/socket",
-      component: () => import("../views/TestSocket.vue"),
+      path: "/test",
+      name: "testDashboard",
+      meta: {
+        title: "testDashboard",
+        requiresAuth: true,
+      },
+      component: () => import("../layouts/testDBoard.vue"),
     },
     {
       path: "/login",
@@ -57,16 +64,16 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach(async (to, from, next) => {
-  const isLoginState = await UserService.verifyUser();
-  if (to.meta.requiresAuth && !isLoginState) {
-    next("/login");
-  } else if (to.path === "/login" && isLoginState) {
-    next("/");
-  } else {
-    document.title = to.meta.title;
-    next();
-  }
-});
+// router.beforeEach(async (to, from, next) => {
+//   const isLoginState = await UserService.verifyUser();
+//   if (to.meta.requiresAuth && !isLoginState) {
+//     next("/login");
+//   } else if (to.path === "/login" && isLoginState) {
+//     next("/");
+//   } else {
+//     document.title = to.meta.title;
+//     next();
+//   }
+// });
 
 export default router;
