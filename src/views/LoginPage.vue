@@ -21,7 +21,7 @@
             <q-input
               class="input"
               v-model="user.user_password"
-              type="text"
+              type="password"
               outlined
               label="Password"
             >
@@ -29,7 +29,9 @@
                 <q-icon name="password" />
               </template>
             </q-input>
-            <q-btn class="btn" @click="handleLogin">Đăng nhập</q-btn>
+            <div class="btn-container">
+              <q-btn class="btn" @click="handleLogin">Đăng nhập</q-btn>
+            </div>
             <section class="func-box">
               <div class="form-check">
                   <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
@@ -86,9 +88,9 @@ export default {
 </script>
 
 <style scoped>
+
 .image-container {
   width: 100%;
-
   display: flex;
   justify-content: center;
   grid-area: img;
@@ -110,7 +112,7 @@ form-box,h2{
   font-size: 2em;
   color: #162938;
   text-align: center;
-
+  width: 450px;
 }
 
 h1 {
@@ -127,10 +129,10 @@ h1 {
   font-size: 17px;
 
   position: relative;
-  width: 100%;
+  width: 90%;
   height: 50px;
   border-bottom: 2px solid #162938;
-  margin: 30px 0;
+  margin: 30px 20px;
   
 }
 
@@ -145,12 +147,12 @@ h1 {
 }
 
 .form-login {
-background-color: azure !important;
+background-color: white !important;
   margin: 0 auto;
   width: 90%;
   grid-area: login;
   position: relative;
-  width: 400px;
+  width: 500px;
   height: 440px;
   background: transparent;
   border: 2px solid rgba(255, 255, 255, 0.5);
@@ -173,9 +175,13 @@ background-color: azure !important;
 .forget-pw:hover{
   color: gray;
 }
-
+.btn-container{
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
 .btn {
-  width: 100%;
+  width: 60%;
   margin: 30px 0;
   background-color: #1976d2;
   font-size: 18px;
