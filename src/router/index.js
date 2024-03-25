@@ -29,7 +29,7 @@ const router = createRouter({
           component: () => import("../views/ProjectDetail.vue"),
         },
       ],
-      component: () => import("../layouts/testDBoard.vue"),
+      component: () => import("../layouts/DashBoard.vue"),
     },
     // {
     //   path: "/socket",

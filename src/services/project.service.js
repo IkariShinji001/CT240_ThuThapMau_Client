@@ -8,8 +8,8 @@ class ProjectService {
     return (await api.get(`${this.path}/${projectId}`)).data;
   }
 
-  async getAllProject(){
-    return (await api.get(`${this.path}/users/1`, {params:{accept_status:2}})).data
+  async getAllProject(userId){
+    return (await api.get(`${this.path}/users/${userId}`, {params:{accept_status:2}})).data
   }
 }
 
