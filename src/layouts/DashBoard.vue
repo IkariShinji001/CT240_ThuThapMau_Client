@@ -69,7 +69,6 @@
 
     <q-page-container>
       <div class="wrapper">
-        {{ project }}
       </div>
       <router-view />
     </q-page-container>
@@ -77,7 +76,6 @@
 </template>
 
 <script>
-import { useDialogPluginComponent } from "quasar";
 import projectService from "../services/project.service";
 import { onBeforeMount, ref } from "vue";
 import { useRoute } from "vue-router";
@@ -107,7 +105,7 @@ export default {
 
     onBeforeMount(async () => {
       await getUserFromLocalStorage();
-      project.value = await projectService.getAllProject(user.user_id);
+      project.value = await projectService.getAllProject(user.user_id, 2);
     });
 
     return {
