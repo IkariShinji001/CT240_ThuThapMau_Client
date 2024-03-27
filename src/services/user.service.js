@@ -2,6 +2,7 @@ import api from "./api.service";
 class UserService {
   constructor() {
     this.path = "/public";
+    this.userPath = "/api/v1/users"
   }
 
   async login(user) {
@@ -28,6 +29,13 @@ class UserService {
     await api.post(`${this.path}/reset-password`, {user_id, password});
   }
 
+  async getUserId(id){
+    return (await api.get(`${this.userPath}/${id}`)).data;
+  }
+
+  async update(id, data){
+    return (await api.patch(`${this.userPath}/${id}`, data)).data;
+  }
 }
 
 export default new UserService();

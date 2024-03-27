@@ -10,15 +10,15 @@
       <div class="info">
         <q-item class="name-item">
           <q-item-label>Name:</q-item-label>
-          <input type="text" class="info-input" v-model="userName" />
+          <input type="text" class="info-input" v-model="user.user_name" />
         </q-item>
         <q-item class="name-item">
           <q-item-label>Email:</q-item-label>
-          <input type="email" class="info-input" v-model="userEmail" disabled />
+          <input type="email" class="info-input" v-model="user.user_email"/>
         </q-item>
         <q-item class="name-item">
           <q-item-label>Phone Number:</q-item-label>
-          <input type="tel" class="info-input" v-model="userPhoneNumber" />
+          <input type="tel" class="info-input" v-model="user.user_phone_number" />
         </q-item>
         <q-item-section class="btn-update">
           <q-btn @click="editUser"> Cập nhật thông tin</q-btn>
@@ -35,30 +35,59 @@
 </template>
   
 <script>
-import { ref } from "vue";
+import { onBeforeMount, reactive } from "vue";
 import userService from "../services/user.service";
+import { useRoute } from "vue-router";
+import { useToast } from "vue-toastification";
 
 export default {
   setup() {
-    const userName = ref();
-    const userEmail = ref();
-    const userPhoneNumber = ref();
+    const toast = useToast()
+    const route = useRoute();
+    const id = route.params.id;
+    const user = reactive({ 
+      user_name: "",
+      user_email: "",
+      user_phone_number: "",
+    })
+
+    onBeforeMount(async () => {
+      try {
+        const res = await userService.getUserId(id);
+        console.log(res);
+        user.user_name = res.user_full_name;
+        user.user_email = res.user_email;
+        user.user_phone_number = res.user_phone_number;
+      } catch (e) {}
+    });
 
     const editUser = async () => {
       try {
-        const res = await userService.update({
-          user_full_name: userName.value,
-          user_email: userEmail.value,
-          user_phone_number: userPhoneNumber.value,
+        if(!user.user_name){
+          toast.error("Không được để trống tên")
+          return;
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if(!emailRegex.test(user.user_email)){
+          toast.error("Email không đúng định dạng")
+          return;
+        }
+        const regex = /^0\d{9}$/;
+        if(!regex.test(user.user_phone_number)){
+          toast.error("Số điện thoại không đúng định dạng")
+          return;
+        } 
+        await userService.update(id, {
+          user_full_name: user.user_name,
+          user_email: user.user_email,
+          user_phone_number: user.user_phone_number,
         });
       } catch (e) {}
     };
 
     return {
-      userName,
-      userEmail,
-      userPhoneNumber,
       editUser,
+      user
     };
   },
 };

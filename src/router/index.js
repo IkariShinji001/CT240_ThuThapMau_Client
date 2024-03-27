@@ -47,7 +47,7 @@ const router = createRouter({
       component: () => import("../views/Signup.vue"),
     },
     {
-      path: "/user",
+      path: "/user/:id",
       meta: {
         title: "Thông tin người dùng",
       },
@@ -64,16 +64,16 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach(async (to, from, next) => {
-  const isLoginState = await UserService.verifyUser();
-  if (to.meta.requiresAuth && !isLoginState) {
-    next("/login");
-  } else if (to.path === "/login" && isLoginState) {
-    next("/");
-  } else {
-    document.title = to.meta.title;
-    next();
-  }
-});
+// router.beforeEach(async (to, from, next) => {
+//   const isLoginState = await UserService.verifyUser();
+//   if (to.meta.requiresAuth && !isLoginState) {
+//     next("/login");
+//   } else if (to.path === "/login" && isLoginState) {
+//     next("/");
+//   } else {
+//     document.title = to.meta.title;
+//     next();
+//   }
+// });
 
 export default router;
