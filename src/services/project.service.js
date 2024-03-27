@@ -16,7 +16,17 @@ class ProjectService {
     return (await api.get(`${this.path}/${projectId}/users/${userId}`)).data;
   }
 
-  
+  async updateProjectById(projectId, payload) {
+    return (await api.patch(`${this.path}/${projectId}`, payload)).data;
+  }
+
+  async checkIsOwnerProject(userId, projectId) {
+    return (await api.get(`${this.path}/${projectId}/users/${userId}`)).data;
+  }
+
+  async getAllProject(userId){
+    return (await api.get(`${this.path}/users/${userId}`, {params:{accept_status:2}})).data
+  }
 }
 
 export default new ProjectService();

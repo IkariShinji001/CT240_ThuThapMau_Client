@@ -11,11 +11,20 @@ const router = createRouter({
         requiresAuth: true,
       },
       children: [
+        // {
+        //   path: "/",
+        //   name: "Main",
+        //   meta: {
+        //     title: "Trang chủ",
+        //     requiresAuth: true,
+        //   },
+        //   component: () => import("../views/ProjectDetail.vue"),
+        // },
         {
-          path: '/projects/:id',
-          name: 'ProjectDetail',
-          meta:{
-            title: 'Dự án'
+          path: "projects/:id",
+          name: "ProjectDetail",
+          meta: {
+            title: "Dự án",
           },
           component: () => import("../views/ProjectDetail.vue")
         },
