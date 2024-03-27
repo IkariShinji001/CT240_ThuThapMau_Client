@@ -18,19 +18,18 @@ const router = createRouter({
             title: 'Dự án'
           },
           component: () => import("../views/ProjectDetail.vue")
+        },
+        {
+          path: '/projects/:id/members',
+          name: 'ProjectDetail',
+          meta:{
+            title: 'Dự án'
+          },
+          component: () => import("../views/ProjectDetail.vue")
         }
       ],
       component: () => import("../layouts/DashBoard.vue"),
-<<<<<<< HEAD
     },
-    // {
-    //   path: "/socket",
-    //   component: () => import("../views/TestSocket.vue"),
-    // },
-=======
-
-    },
->>>>>>> 7a69e1faf5f348e3bc1e62a2dba2dc49ba454546
     {
       path: "/login",
       name: "login",
