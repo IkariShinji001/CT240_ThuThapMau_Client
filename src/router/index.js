@@ -30,11 +30,11 @@ const router = createRouter({
         },
         {
           path: '/projects/:id/members',
-          name: 'ProjectDetail',
+          name: 'sd',
           meta:{
             title: 'Dự án'
           },
-          component: () => import("../views/ProjectDetail.vue")
+          component: () => import("../views/ProjectMember.vue")
         }
       ],
       component: () => import("../layouts/DashBoard.vue"),

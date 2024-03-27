@@ -4,8 +4,8 @@ class ProjectService {
     this.path = "/api/v1/project-member";
   }
 
-  async getProjectMember(projectId){
-   return (await api.get(`${this.path}/projects/${projectId}`)).data;
+  async getProjectMember(projectId, accept_status){
+   return (await api.get(`${this.path}/projects/${projectId}`, {params: {accept_status}} )).data;
   }
   
 }
