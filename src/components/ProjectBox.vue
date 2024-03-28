@@ -1,62 +1,116 @@
 <template>
-    <div class="q-pa-md row items-start q-gutter-md">
-      <q-card class="my-card" flat bordered>
-        <q-img
-          src="https://cdn.quasar.dev/img/parallax2.jpg"
-        />
-  
-        <q-card-section>
-          <div class="text-overline text-orange-9">Overline</div>
-          <div class="text-h5 q-mt-sm q-mb-xs">Title</div>
-          <div class="text-caption text-grey">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </div>
-        </q-card-section>
-  
-        <q-card-actions>
-          <q-btn flat color="primary" label="Share" />
-          <q-btn flat color="secondary" label="Book" />
-  
-          <q-space />
-  
-          <q-btn
-            color="grey"
-            round
-            flat
-            dense
-            :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-            @click="expanded = !expanded"
-          />
+  <div class="q-pa-md img-container">
+    <div v-for="pro in project" :key="pro.project_id" class="list-items">
+      <q-card class="q-card-class">
+        <router-link :to="'/projects/' + pro.project_id">
+          <q-img :src="getRandomImgSrc()" class="q-img-class" />
+          <q-card-section>
+            <div class="row no-wrap items-center">
+              <div class="col text-h6 ellipsis">
+                {{ pro.project_name }}
+              </div>
+              <div v-if="pro.project_status == 'Active'">
+                <q-icon
+                  style="color: green"
+                  size="20px"
+                  name="check_circle"
+                ></q-icon>
+              </div>
+              <div v-else>
+                <q-icon name="cancel" size="20px" style="color: red"></q-icon>
+              </div>
+            </div>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none">
+            <div class="text-subtitle1">{{ pro.user.user_full_name }}</div>
+          </q-card-section>
+        </router-link>
+
+        <q-separator />
+        <q-card-actions class="q-card-action-class">
+          ngày tạo: {{ formatDate(pro.project_created_at) }}
         </q-card-actions>
-  
-        <q-slide-transition>
-          <div v-show="expanded">
-            <q-separator />
-            <q-card-section class="text-subtitle2">
-              {{ lorem }}
-            </q-card-section>
-          </div>
-        </q-slide-transition>
       </q-card>
     </div>
-  </template>
-  
-  <script>
-  import { ref } from 'vue'
-  
-  export default {
-    setup () {
-      return {
-        expanded: ref(false),
-        lorem: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
-      }
+  </div>
+</template>
+
+<script>
+import { ref, watchEffect } from "vue";
+
+export default {
+  props: {
+    searchName: String,
+    project: Object,
+  },
+
+  setup(props) {
+    const searchName = ref(props.searchName);
+    const project = ref(props.project);
+    const listImg = ref([
+      "https://gstatic.com/classroom/themes/img_backtoschool.jpg",
+      "https://gstatic.com/classroom/themes/img_learnlanguage.jpg",
+      "https://gstatic.com/classroom/themes/img_reachout.jpg",
+      "https://gstatic.com/classroom/themes/img_bookclub.jpg",
+      "https://gstatic.com/classroom/themes/img_graduation.jpg",
+      "https://gstatic.com/classroom/themes/img_read.jpg",
+      "https://gstatic.com/classroom/themes/img_code_thumb.jpg",
+      "https://gstatic.com/classroom/themes/Honors_thumb.jpg",
+      "https://gstatic.com/classroom/themes/img_breakfast_thumb.jpg",
+      "https://gstatic.com/classroom/themes/WorldStudies_thumb.jpg",
+      "https://gstatic.com/classroom/themes/English_thumb.jpg",
+      "https://gstatic.com/classroom/themes/English_thumb.jpg",
+    ]);
+    watchEffect(() => {
+      searchName.value = props.searchName;
+      project.value = props.project;
+    });
+
+    function randomIntFromInterval(min, max) {
+      return Math.floor(Math.random() * (max - min + 1) + min);
     }
-  }
-  </script>
+    const getRandomImgSrc = () => {
+      const index = randomIntFromInterval(0, listImg.value.length - 1);
+      return listImg.value[index];
+    };
   
-  <style lang="sass" scoped>
-  .my-card
-    width: 100%
-    max-width: 350px
-  </style>
-  
+
+    function formatDate(dateString) {
+      return dateString.slice(0, 10);
+    }
+
+    return {
+      searchName,
+      project,
+      getRandomImgSrc,
+      formatDate,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.img-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 242px);
+  grid-gap: 15px;
+}
+.q-card-class {
+  width: 244px;
+}
+.q-img-class {
+  height: 100px;
+  border-radius: 5px;
+}
+.q-card-action-class {
+  height: 45px;
+  font-weight: 500;
+  color: var(--secondary-color);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+</style>

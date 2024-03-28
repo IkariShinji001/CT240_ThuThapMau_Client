@@ -11,15 +11,15 @@ const router = createRouter({
         requiresAuth: true,
       },
       children: [
-        // {
-        //   path: "/",
-        //   name: "Main",
-        //   meta: {
-        //     title: "Trang chủ",
-        //     requiresAuth: true,
-        //   },
-        //   component: () => import("../views/ProjectDetail.vue"),
-        // },
+        {
+          path: "/",
+          name: "Main",
+          meta: {
+            title: "Trang chủ",
+            requiresAuth: true,
+          },
+          component: () => import("../views/Project.vue"),
+        },
         {
           path: "projects/:id",
           name: "ProjectDetail",
@@ -31,10 +31,6 @@ const router = createRouter({
       ],
       component: () => import("../layouts/DashBoard.vue"),
     },
-    // {
-    //   path: "/socket",
-    //   component: () => import("../views/TestSocket.vue"),
-    // },
     {
       path: "/login",
       name: "login",
