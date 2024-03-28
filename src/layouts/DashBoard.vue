@@ -109,6 +109,7 @@ export default {
     onBeforeMount(async () => {
       await getUserFromLocalStorage();
       project.value = await projectService.getAllProject(user.user_id, 2);
+      project.value = await projectService.getAllProject(user.user_id, 2);
     });
 
     return {

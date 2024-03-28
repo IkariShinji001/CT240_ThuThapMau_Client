@@ -26,8 +26,16 @@ const router = createRouter({
           meta: {
             title: "Dự án",
           },
-          component: () => import("../views/ProjectDetail.vue"),
+          component: () => import("../views/ProjectDetail.vue")
         },
+        {
+          path: '/projects/:id/members',
+          name: 'sd',
+          meta:{
+            title: 'Dự án'
+          },
+          component: () => import("../views/ProjectMember.vue")
+        }
       ],
       component: () => import("../layouts/DashBoard.vue"),
     },
