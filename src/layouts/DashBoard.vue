@@ -1,203 +1,160 @@
 <template>
-  <q-layout view="lhh Lpr lFf">
-    <q-header hidden class="xs">
+  <q-layout view="hHh lpR fFf" class="bg-grey-1">
+    <q-header elevated class="bg-white text-grey-8 q-py-xs" height-hint="58">
       <q-toolbar>
-        <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
-        <q-toolbar-title>Menu</q-toolbar-title>
+        <q-btn
+          flat
+          dense
+          round
+          @click="toggleLeftDrawer"
+          aria-label="Menu"
+          icon="menu"
+        />
+
+        <q-toolbar-title shrink class="text-weight-bold">
+          ROOOMM
+        </q-toolbar-title>
+        <q-space />
+        <q-space />
+        <div class="q-gutter-sm row items-center no-wrap">
+          <q-btn round dense flat color="grey-8" icon="notifications">
+            <q-badge color="red" text-color="white" floating> 2 </q-badge>
+            <q-tooltip>Notifications</q-tooltip>
+          </q-btn>
+          <q-btn round flat>
+            <q-avatar size="40px">
+              <img :src="userImg">
+            </q-avatar>
+            <q-tooltip>Account</q-tooltip>
+          </q-btn>
+        </div>
       </q-toolbar>
     </q-header>
+
     <q-drawer
-      class="drawer"
-      v-model="drawer"
-      :breakpoint="600"
-      :mini="miniState"
+      v-model="leftDrawerOpen"
       show-if-above
       bordered
-      @mouseover="miniState = false"
-      @mouseout="miniState = true"
+      class="bg-grey-2"
+      :width="240"
+      :breakpoint="500"
     >
-      <q-list padding>
-        <router-link to="/">
-          <q-item class="logo-container">
-            <img src="../assets/THANH DUY BUFFET.png" />
-          </q-item>
-        </router-link>
-
-        <div v-for="block in sidebarOptions">
-          <q-separator spaced />
-          <q-item-label header class="option-header">{{
-            block.header_name
-          }}</q-item-label>
-          <router-link
-            :to="`${option.path}`"
-            v-for="(option, index) in block.content"
-            :key="index"
+      <q-scroll-area class="fit side-bar-container" >
+        <q-item-label header class="text-uppercase side-bar-title">
+          Your Projects
+          <q-separator
+            style="margin-bottom: 10px; background: rgb(224, 224, 204)"
+          />
+        </q-item-label>
+        <q-list padding class="q-list-container">
+          <q-item
+            v-for="pro in project"
+            :key="pro.project_id"
+            v-ripple
+            clickable
+            class="list-side-bar"
           >
-            <q-item clickable v-ripple class="option">
-              <q-item-section avatar>
-                <q-icon :name="option.iconName" :class="option.class" />
-              </q-item-section>
-              <q-item-section class="option-text">
-                {{ option.text }}
-              </q-item-section>
-            </q-item>
-          </router-link>
-        </div>
-      </q-list>
-      <q-item>
-        <q-item-section>
-          <q-btn @click="handleSignOut" class="btn-sign_out">Đăng xuất</q-btn>
-        </q-item-section>
-      </q-item>
+            <q-item-section class="item-side-bar">
+              <q-item-label class="list-your-project">
+                <q-icon name="task" size="36px"></q-icon>
+                <span class="your-project-name">
+                  {{ pro.project_name }}
+                </span>
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-scroll-area>
     </q-drawer>
+
     <q-page-container>
-      <router-view></router-view>
+      <div class="wrapper">
+        {{ project }}
+      </div>
+      <router-view />
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { useToast } from "vue-toastification";
-import userService from "../services/user.service";
+import { useDialogPluginComponent } from "quasar";
+import projectService from "../services/project.service";
+import { onBeforeMount, ref } from "vue";
+import { useRoute } from "vue-router";
+
 export default {
-  name: "DashBoard",
   setup() {
-    const router = useRouter();
-    const toast = useToast();
-    const miniState = ref(true);
-    const drawer = ref(false);
+    const project = ref();
+    const leftDrawerOpen = ref(false);
+    let userImg = ref("")
+    let user = ref({
+      user_id: "",
+      user_name: "",
+      user_image_url: ""
+    });
 
-    const sidebarOptions = [
-      {
-        header_name: "Quản lý vé buffet",
-        content: [
-          {
-            iconName: "inbox",
-            class: "icon",
-            text: "Vé buffet",
-            path: "/buffet-tickets",
-          },
-        ],
-      },
-      {
-        header_name: "Quản lý món ăn và sốt",
-        content: [
-          {
-            iconName: "inbox",
-            class: "icon",
-            text: "Món ăn",
-            path: "/dishes",
-          },
-          {
-            iconName: "inbox",
-            class: "icon",
-            text: "Sốt",
-            path: "/sauces",
-          },
-        ],
-      },
-      {
-        header_name: "Quản lý khu vực và bàn",
-        content: [
-        {
-            iconName: "inbox",
-            class: "icon",
-            text: "Khu vực và bàn",
-            path: "/areas",
-          },
-        ],
-      },
-      {
-        header_name: "Quản lý nhân sự",
-        content: [
-        {
-            iconName: "inbox",
-            class: "icon",
-            text: "Nhân sự",
-            path: "/employees",
-          },
-        ],
-      },
-      {
-        header_name: "Thống kê",
-        content: [
-        {
-            iconName: "inbox",
-            class: "icon",
-            text: "Thống kê doanh thu",
-            path: "/statistic/revenue",
-          },
-          {
-            iconName: "inbox",
-            class: "icon",
-            text: "Thống kê món ăn",
-            path: "/statistic/food",
-          },
-        ],
-      },
-    ];
+    function toggleLeftDrawer() {
+      leftDrawerOpen.value = !leftDrawerOpen.value;
+    }
 
-    const handleSignOut = async () => {
-      try {
-        await userService.logout();
-        router.push("/login");
-        toast.success("Đăng xuất thành công");
-      } catch (error) {
-        toast.error("Bị lỗi");
+    async function getUserFromLocalStorage() {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        user = JSON.parse(userData);
+        userImg.value = user.user_image_url;
       }
-    };
+    }
+
+    onBeforeMount(async () => {
+      await getUserFromLocalStorage();
+      project.value = await projectService.getAllProject(user.user_id);
+    });
 
     return {
-      miniState,
-      drawer,
-      handleSignOut,
-      sidebarOptions,
+      leftDrawerOpen,
+      toggleLeftDrawer,
+      project,
+      userImg
     };
   },
 };
 </script>
 
-<style>
-.drawer {
-  background-color: #1976d2;
+<style scoped>
+.q-list-container {
+  max-height: 350px;
+  overflow-y: auto;
 }
 
-.icon {
+.side-bar-container {
+  background-color: var(--secondary-color);
+}
+
+.side-bar-title {
+  text-align: center;
   color: white;
+  font-size: 24px;
+  font-weight: bold;
 }
-
-img {
-  width: 50%;
-}
-
-.logo-container {
-  display: flex;
-  justify-content: center;
-}
-
-a {
-  text-decoration: none !important;
-}
-.icon {
-  font-size: 25px;
-}
-
-.option-text {
+.list-your-project {
+  color: white;
+  font-weight: bold;
   font-size: 17px;
-  color: white;
+  display: flex;
+  align-items: center;
 }
-.option:hover {
-  background-color: #1606cccc;
+.your-project-name {
+  margin-left: 10px;
 }
-.option-header {
-  font-size: 20px;
-  color: white;
+.list-side-bar {
+  padding: 0 0;
 }
 
-.btn-sign_out {
-  background-color: #819ab3;
-  color: white;
+.item-side-bar {
+  border-bottom: 1px solid;
+  border-color: rgba(224, 224, 224, 0.3);
+}
+.item-side-bar:hover {
+  background: #103049;
 }
 </style>

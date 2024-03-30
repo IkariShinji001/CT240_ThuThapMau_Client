@@ -108,7 +108,7 @@ img {
 }
 
 .form-reset {
-  background-color: azure !important;
+  background-color: white !important;
   margin: 0 auto;
   width: 90%;
   grid-area: reset;

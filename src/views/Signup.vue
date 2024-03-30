@@ -47,7 +47,7 @@
             <q-input
                 class="input item2"
                 v-model="user.user_password"
-                type="text"
+                type="password"
                 outlined
                 label="Password"
               >
@@ -58,7 +58,7 @@
                 <q-input
                 class="input item2"
                 v-model="user.repasswd"
-                type="text"
+                type="password"
                 outlined
                 label="rePassword"
               >
@@ -214,7 +214,7 @@
   }
   
   .form-signup {
-    background-color: azure !important;
+    background-color: white !important;
     margin: 0 auto;
     width: 90%;
     grid-area: signup;

@@ -6,41 +6,49 @@
         <div class="form-box">
           <h2>Đăng nhập</h2>
 
-            <q-input
-              class="input"
-              v-model="user.user_email"
-              type="text"
-              outlined
-              label="Email"
-            >
+          <q-input
+            class="input"
+            v-model="user.user_email"
+            type="text"
+            outlined
+            label="Email"
+          >
             <template v-slot:prepend>
-                <q-icon name="email" />
-              </template>
-            </q-input>
+              <q-icon name="email" />
+            </template>
+          </q-input>
 
-            <q-input
-              class="input"
-              v-model="user.user_password"
-              type="text"
-              outlined
-              label="Password"
-            >
+          <q-input
+            class="input"
+            v-model="user.user_password"
+            type="password"
+            outlined
+            label="Password"
+          >
             <template v-slot:prepend>
-                <q-icon name="password" />
-              </template>
-            </q-input>
+              <q-icon name="password" />
+            </template>
+          </q-input>
+          <div class="btn-container">
             <q-btn class="btn" @click="handleLogin">Đăng nhập</q-btn>
-            <section class="func-box">
-              <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
-                  <label class="form-check-label" for="form2Example31"> Remember me </label>
-              </div>
-              <router-link class="forget-pw" to="/forget-password"
-                >Quên mật khẩu</router-link>
-            </section>
-            
-              
-            
+          </div>
+          <section class="func-box">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="form2Example31"
+                checked
+              />
+              <label class="form-check-label" for="form2Example31">
+                Remember me
+              </label>
+            </div>
+            <router-link class="forget-pw" to="/forget-password"
+              >Quên mật khẩu</router-link
+            >
+          </section>
         </div>
       </section>
       <div class="image-container">
@@ -52,33 +60,34 @@
 
 <script>
 import { reactive } from "vue";
-import userService from "../services/user.service"
+import userService from "../services/user.service";
 import { useToast } from "vue-toastification";
-import {useRouter} from "vue-router";
+import { useRouter } from "vue-router";
 
 export default {
   setup() {
     const toast = useToast();
-    const router = useRouter()
+    const router = useRouter();
     const user = reactive({
-      user_email: '',
-      user_password: '',
+      user_email: "",
+      user_password: "",
     });
 
-    const handleLogin = async () =>{
+    const handleLogin = async () => {
       try {
-        await userService.login(user);
-        router.push({path: '/'})
+        const userLogin = await userService.login(user);
+        localStorage.setItem("user", JSON.stringify(userLogin));
+        router.push({ path: "/" });
         toast.success("Đăng nhập thành công");
       } catch (error) {
         toast.error("Sai tên đăng nhập hoặc mật khẩu");
         console.error(error);
       }
-    }
+    };
 
     return {
       user,
-      handleLogin
+      handleLogin,
     };
   },
 };
@@ -87,13 +96,12 @@ export default {
 <style scoped>
 .image-container {
   width: 100%;
-
   display: flex;
   justify-content: center;
   grid-area: img;
 }
 
-.func-box{
+.func-box {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 2px;
@@ -105,11 +113,12 @@ img {
   height: 50%;
 }
 
-form-box,h2{
+form-box,
+h2 {
   font-size: 2em;
   color: #162938;
   text-align: center;
-
+  width: 450px;
 }
 
 h1 {
@@ -126,30 +135,29 @@ h1 {
   font-size: 17px;
 
   position: relative;
-  width: 100%;
+  width: 90%;
   height: 50px;
   border-bottom: 2px solid #162938;
-  margin: 30px 0;
-  
+  margin: 30px 20px;
 }
-
 
 .container {
   /* background-color: rgba(148, 196, 158, 0.675) !important; */
-  background-image: url('../assets/background_login.jpg') !important;
+  background-image: url("../assets/background_login.jpg") !important;
   min-height: 100vh;
   display: grid;
-  grid-template-areas: "title title"
-                      "img login";
+  grid-template-areas:
+    "title title"
+    "img login";
 }
 
 .form-login {
-background-color: azure !important;
+  background-color: white !important;
   margin: 0 auto;
   width: 90%;
   grid-area: login;
   position: relative;
-  width: 400px;
+  width: 500px;
   height: 440px;
   background: transparent;
   border: 2px solid rgba(255, 255, 255, 0.5);
@@ -169,12 +177,16 @@ background-color: azure !important;
   margin: 10px 0;
 }
 
-.forget-pw:hover{
+.forget-pw:hover {
   color: gray;
 }
-
+.btn-container {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
 .btn {
-  width: 100%;
+  width: 60%;
   margin: 30px 0;
   background-color: #1976d2;
   font-size: 18px;
@@ -182,10 +194,8 @@ background-color: azure !important;
   font-weight: bolder;
 }
 
-.btn:active{
-  color:red;
+.btn:active {
+  color: red;
   background-color: white;
 }
-
-
 </style>

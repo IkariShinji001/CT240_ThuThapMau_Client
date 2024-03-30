@@ -10,6 +10,33 @@ const router = createRouter({
         title: "Dashboard",
         requiresAuth: true,
       },
+      children: [
+        // {
+        //   path: "/",
+        //   name: "Main",
+        //   meta: {
+        //     title: "Trang chủ",
+        //     requiresAuth: true,
+        //   },
+        //   component: () => import("../views/ProjectDetail.vue"),
+        // },
+        {
+          path: "projects/:id",
+          name: "ProjectDetail",
+          meta: {
+            title: "Dự án",
+          },
+          component: () => import("../views/ProjectDetail.vue")
+        },
+        {
+          path: '/projects/:id/members',
+          name: 'sd',
+          meta:{
+            title: 'Dự án'
+          },
+          component: () => import("../views/ProjectMember.vue")
+        }
+      ],
       component: () => import("../layouts/DashBoard.vue"),
     },
     // {
@@ -52,6 +79,14 @@ const router = createRouter({
         title: "Thông tin người dùng",
       },
       component: () => import("../views/User.vue"),
+    },
+    {
+      path: "/collection/:collection_id/user/:user_id",
+      name: "Tạo from",
+      meta: {
+        title: "Tạo form",
+      },
+      component: () => import("../views/CreateForm.vue"),
     },
     // {
     //   path: '/:pathMatch(.*)*',
