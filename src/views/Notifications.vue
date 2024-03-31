@@ -1,7 +1,7 @@
 <template>
   <q-page class="page">
     <div class="header">
-      <h3>Thông báo</h3>
+      <h3>Thông báo ({{ data.length }})</h3>
     </div>
 
     <div v-if="data" class="body">
@@ -23,12 +23,12 @@
             <q-icon
               name="check"
               class="accept-status-qicon"
-              @click="updateMemberStatus(notification.user.user_id, notification.project_id, 2)"
+              @click="updateMemberStatus(notification.project_id, 2)"
             ></q-icon>
             <q-icon
               name="close"
               class="accept-status-qicon"
-              @click="updateMemberStatus(notification.user.user_id, notification.project_id, 0)"
+              @click="updateMemberStatus( notification.project_id, 0)"
             ></q-icon>
           </div>
         </div>
@@ -58,24 +58,23 @@ export default {
       accept_status: "",
     });
 
-    // de dam bao ngta ko nhap tay len duong dan 
-    // => Lay user_id qua local => Tranh tinh trang ngta nhap id cua nguoi khác 
-    // => Bao mat tam thoi => chu nhat zo t coi lai
     onBeforeMount(async () => {
-      data.value = await projectService.getAllProject(user_id, 1);
+      data.value = await projectService.getAllNotificationsByUserId(user_id, 1);
       console.log(data.value);
     });
 
     // Truyen xuong ma ko nhan z
 
-    const updateMemberStatus = async (user_id, project_id, accept_status) => {
-      console.log("goi dc ham update");
+    const updateMemberStatus = async ( project_id, accept_status) => {
+      const index = data.value.findIndex((project) => project.project_id === project_id);
       try {
         await projectMemberService.updateMemberStatus({
           user_id,
           project_id,
           accept_status,
         });
+        data.value.splice(index, 1);
+       
         toast.success("Cập nhật thông tin thành công");
       } catch (error) {
         console.error(error);
@@ -128,6 +127,7 @@ export default {
   border-top-right-radius: 50% !important;
   border-bottom-right-radius: 50% !important;
   border-bottom-left-radius: 50% !important;
+  
 }
 .accept-status {
   right: 7px;
@@ -144,5 +144,17 @@ export default {
 .accept-status-qicon:hover {
   background: #d0d7de;
   color: #24292f;
+}
+
+.noti-main{
+  width: 100%;
+}
+
+.img{
+  width: 20%;
+}
+/* set cung cho info de khong bi choi suc */
+.infor{
+  width: 60%;
 }
 </style>
