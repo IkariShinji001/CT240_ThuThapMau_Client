@@ -23,6 +23,9 @@ class ProjectMemberService {
   async addOwnerToProjectMember(userId, projectId){
     return (await api.post(`${this.path}/owner-projects/${projectId}`, userId)).data;
   }
+  async updateMemberStatus(body){
+    return (await api.patch(`${this.path}`, body)).data;
+  }
 }
 
 export default new ProjectMemberService();

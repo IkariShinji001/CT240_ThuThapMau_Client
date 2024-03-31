@@ -35,6 +35,14 @@ const router = createRouter({
             title: 'Dự án'
           },
           component: () => import("../views/ProjectMember.vue")
+        },
+        {
+          path: '/notifications',
+          name: 'Thông báo',
+          meta:{
+            title: 'Dự án'
+          },
+          component: () => import("../views/Notifications.vue")
         }
       ],
       component: () => import("../layouts/DashBoard.vue"),
