@@ -1,74 +1,30 @@
-<template>
-  <div class="logo">
-    <button class="menu-icon" @click="openSideBar">avatar</button>
-  </div>
-  <div class="sidebar" :class="{ open: isOpened }">
-    <div class="sidebar-content">
-      <ul class="lists">
-        <li class="list">
-          <a href="#" class="nav-link">
-            <span class="link"> HOME</span>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </div>
-
-  <section :class="{overlay : isOpened}" @click="openSideBar"></section>
-</template>
+<template></template>
 
 <script>
-import { is } from "quasar";
-import { ref } from "vue";
+import testValue from "../services/testCreateForm.service";
 export default {
   setup() {
-    const isOpened = ref(false);
+    const userId = ref(20);
+    const formId = ref(1);
+    const values = ref([{ hoten: "hukhan" }, { age: 18 }, { thuthap: "asfa" }]);
+    const files = []
+    async function createProject(e) {
+      e.preventDefault();
+      try {
+        const fd = new FormData();
+        fd.append("collection_form_id", formId);
+        fd.append("file", fileUploaded.value);
+        fd.append("user_id", userId);
+        fd.append("values", values);
+        fd.append("files", files)
+        const createdProject = await projectService.createProject(fd);
 
-    function openSideBar() {
-      isOpened.value = !isOpened.value;
+       
+        emit("getNewProject", createdProject);
+      } catch (e) {
+        console.log(e);
+      }
     }
-    return {
-      isOpened,
-      openSideBar,
-    };
   },
 };
 </script>
-
-<style>
-body{
-  background: gray;
-}
-.menu-icon {
-  cursor: pointer;
-}
-
-.sidebar .sidebar-content {
-  padding: 30px;
-  list-style: none;
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 100%;
-  z-index: 50;
-  background: rgba(0, 0, 0, 0.1);
-}
-.sidebar {
-  position: fixed;
-  top: 50;
-  left: -100%;
-  height: 500px;
-  width: 250px;
-  background: orange;
-  padding: 30px;
-  z-index: 100;
-  transition: all 0.5s ease;
-}
-.open {
-  left: 0;
-} 
-</style>

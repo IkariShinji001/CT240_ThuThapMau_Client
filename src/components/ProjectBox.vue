@@ -1,16 +1,20 @@
 <template>
-  <div class="q-pa-md img-container" >
-    <div v-for="pro in  project " :key="pro.project_id" class="list-items">
+  <div class="q-pa-md img-container">
+    <div v-for="pro in project" :key="pro.project_id" class="list-items">
       <q-card class="q-card-class">
         <router-link :to="'/projects/' + pro.project_id">
-          <q-img :src=" pro.project_image_url " class="q-img-class" />
+          <q-img :src="pro.project_image_url" class="q-img-class" />
           <q-card-section>
             <div class="row no-wrap items-center">
               <div class="col text-h6 ellipsis">
                 {{ pro.project_name }}
               </div>
-              <div v-if=" pro.project_status == 'Active' ">
-                <q-icon style="color: green" size="20px" name="check_circle"></q-icon>
+              <div v-if="pro.project_status == 'Đang hoạt động'">
+                <q-icon
+                  style="color: green"
+                  size="20px"
+                  name="check_circle"
+                ></q-icon>
               </div>
               <div v-else>
                 <q-icon name="cancel" size="20px" style="color: red"></q-icon>

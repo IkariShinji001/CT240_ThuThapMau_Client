@@ -15,7 +15,6 @@
         filled
         v-model="project_name"
         label="Tên dự án"
-        hint="Name and surname"
         lazy-rules
         :rules="[(val) => (val && val.length > 0) || 'Vui lòng điền tên dự án']"
       />
@@ -47,8 +46,12 @@
 <script>
 import { ref, onBeforeMount } from "vue";
 import projectService from "../services/project.service";
+import projectMemberService from "../services/projectMember.service";
 
 export default {
+  props: {
+    project: Object,
+  },
   setup(props, { emit }) {
     const project_name = ref("");
     const fileUploaded = ref(null);
@@ -72,14 +75,25 @@ export default {
       try {
         const date = new Date();
         const formattedDate = date.toISOString().split("T")[0];
-        const status = "Active";
+        const status = "Đang hoạt động";
         const fd = new FormData();
         fd.append("project_name", project_name.value);
         fd.append("project_status", status);
         fd.append("project_created_at", formattedDate);
         fd.append("file", fileUploaded.value);
-        fd.append("user_id", user.value.user_id)
-        await projectService.createProject(fd);
+        fd.append("user_id", user.value.user_id);
+        const createdProject = await projectService.createProject(fd);
+
+        console.log(fileUploaded.value);
+        try {
+          await projectMemberService.addOwnerToProjectMember(
+            user.value.user_id,
+            createdProject.project_id
+          );
+        } catch (error) {
+          console.log(error);
+        }
+        emit("getNewProject", createdProject);
       } catch (e) {
         console.log(e);
       }

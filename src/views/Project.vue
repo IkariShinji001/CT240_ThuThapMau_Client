@@ -45,6 +45,7 @@
           <CreateProjectModal
             v-if="isModalVisible"
             @close="closeModal"
+            :getNewProject="getNewProject"
           ></CreateProjectModal>
         </q-card>
       </q-dialog>
@@ -75,10 +76,24 @@ export default {
     const filterInput = ref("Tất cả");
     const options = ref(["Tất cả", "Cá nhân", "Thành viên"]);
 
-    async function getUserFromLocalStorage() {
+    onBeforeMount(async () => {
+      try {
+        getUserFromLocalStorage();
+        projects.value = await projectService.getAllProject(
+          user.value.user_id,
+          2
+        );
+      } catch (e) {
+        console.log(e);
+      }
+    });
+    function getNewProject(pro) {
+      projects.value.push(pro);
+    }
+    function getUserFromLocalStorage() {
       const userData = localStorage.getItem("user");
       if (userData) {
-        user = JSON.parse(userData);
+        user.value = JSON.parse(userData);
       }
     }
 
@@ -89,23 +104,17 @@ export default {
       isModalVisible.value = !isModalVisible.value;
     }
 
-    onBeforeMount(async () => {
-      await getUserFromLocalStorage();
-      projects.value = await projectService.getAllProject(user.user_id, 2);
-    });
-
     const filteredProjectByOption = computed(() => {
       let tempProjects;
       if (filterInput.value == "Tất cả") {
         tempProjects = projects.value;
-        console.log();
       } else if (filterInput.value == "Cá nhân") {
         tempProjects = projects.value.filter(
-          (pro) => pro.user.user_id === user.user_id
+          (pro) => pro.user.user_id === user.value.user_id
         );
       } else
         tempProjects = projects.value.filter(
-          (pro) => pro.user.user_id !== user.user_id
+          (pro) => pro.user.user_id !== user.value.user_id
         );
 
       if (!searchProjectName.value) {
@@ -121,7 +130,7 @@ export default {
 
     function cancelHandler() {
       filterInput.value = "Tất cả";
-      searchProjectName.value = ""
+      searchProjectName.value = "";
     }
 
     return {
@@ -135,6 +144,7 @@ export default {
       filterInput,
       options,
       cancelHandler,
+      getNewProject,
     };
   },
 };
