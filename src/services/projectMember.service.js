@@ -19,6 +19,9 @@ class ProjectMemberService {
   async addMembersToProject(user_ids, projectId) {
     return (await api.post(`${this.path}/projects/${projectId}`, user_ids)).data;
   }
+  async updateMemberStatus(body){
+    return (await api.patch(`${this.path}`, body)).data;
+  }
 }
 
 export default new ProjectMemberService();
