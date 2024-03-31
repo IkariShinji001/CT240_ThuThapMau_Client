@@ -7,50 +7,67 @@
           <h2>Đăng nhập</h2>
 
           <q-input class="input" v-model="user.user_email" type="text" outlined label="Email">
-            <template v-slot:prepend>
-              <q-icon name="email" />
-            </template>
-          </q-input>
+            <q-input class="input" v-model="user.user_email" type="text" outlined label="Email">
+              <template v-slot:prepend>
+                <q-icon name="email" />
+              </template>
+            </q-input>
 
-          <q-input class="input" v-model="user.user_password" type="password" outlined label="Password">
-            <template v-slot:prepend>
+            <q-input class="input" v-model="user.user_password" type="password" outlined label="Password">
+              <q-input class="input" v-model="user.user_password" type="password" outlined label="Password">
+                <template v-slot:prepend>
+                  <q-icon name="password" />
+                </template>
+              </q-input>
+              <div class="btn-container">
+                <q-btn class="btn" @click="handleLogin">Đăng nhập</q-btn>
+              </div>
+              <section class="func-box">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
+                  <label class="form-check-label" for="form2Example31"> Remember me </label>
+                </div>
+                <router-link class="forget-pw" to="/forget-password">Quên mật khẩu</router-link>
+              </section>
+
+
+
               <q-icon name="password" />
-            </template>
-          </q-input>
-          <div class="btn-container">
-            <q-btn class="btn" @click="handleLogin">Đăng nhập</q-btn>
-          </div>
-          <section class="func-box">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
-              <label class="form-check-label" for="form2Example31"> Remember me </label>
-            </div>
-            <router-link class="forget-pw" to="/forget-password">Quên mật khẩu</router-link>
-          </section>
-
-
-
-        </div>
-      </section>
-      <div class="image-container">
-      </div>
-    </div>
-  </q-page>
+</template>
+</q-input>
+<div class="btn-container">
+  <q-btn class="btn" @click="handleLogin">Đăng nhập</q-btn>
+</div>
+<section class="func-box">
+  <div class="form-check">
+    <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
+    <label class="form-check-label" for="form2Example31">
+      Remember me
+    </label>
+  </div>
+  <router-link class="forget-pw" to="/forget-password">Quên mật khẩu</router-link>
+</section>
+</div>
+</section>
+<div class="image-container">
+</div>
+</div>
+</q-page>
 </template>
 
 <script>
 import { reactive } from "vue";
-import userService from "../services/user.service"
+import userService from "../services/user.service";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 
 export default {
   setup() {
     const toast = useToast();
-    const router = useRouter()
+    const router = useRouter();
     const user = reactive({
-      user_email: '',
-      user_password: '',
+      user_email: "",
+      user_password: "",
     });
 
     const handleLogin = async () => {
@@ -63,11 +80,11 @@ export default {
         toast.error("Sai tên đăng nhập hoặc mật khẩu");
         console.error(error);
       }
-    }
+    };
 
     return {
       user,
-      handleLogin
+      handleLogin,
     };
   },
 };
@@ -123,10 +140,9 @@ h1 {
 
 }
 
-
 .container {
   /* background-color: rgba(148, 196, 158, 0.675) !important; */
-  background-image: url('../assets/img0.jpg') !important;
+  background-image: url('../assets/background_login.jpg') !important;
   min-height: 100vh;
   display: grid;
   grid-template-areas: "title title"
