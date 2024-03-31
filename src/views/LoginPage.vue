@@ -15,9 +15,6 @@
               <q-icon name="password" />
             </template>
           </q-input>
-          <div class="btn-container">
-            <q-btn class="btn" @click="handleLogin">Đăng nhập</q-btn>
-          </div>
           <section class="func-box">
             <div class="form-check">
               <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
@@ -28,15 +25,6 @@
           <div class="btn-container">
             <q-btn class="btn" @click="handleLogin">Đăng nhập</q-btn>
           </div>
-          <section class="func-box">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
-              <label class="form-check-label" for="form2Example31">
-                Remember me
-              </label>
-            </div>
-            <router-link class="forget-pw" to="/forget-password">Quên mật khẩu</router-link>
-          </section>
         </div>
       </section>
       <div class="image-container">
