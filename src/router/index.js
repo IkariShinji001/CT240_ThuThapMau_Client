@@ -69,6 +69,15 @@ const router = createRouter({
       },
       component: () => import("../views/Signup.vue"),
     },
+
+    // THem moisw?/
+    {
+      path: "/users",
+      meta: {
+        title: "Đăng ký tài khoản",
+      },
+      component: () => import("../layouts/testUser.vue"),
+    },
     // {
     //   path: '/:pathMatch(.*)*',
     //   name: 'notFound',

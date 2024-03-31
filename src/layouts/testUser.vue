@@ -13,7 +13,7 @@
           />
 
           <q-toolbar-title shrink class="text-weight-bold">
-            ROOOMM
+            ROOOMM Tesst
           </q-toolbar-title>
           <q-space />
           <div class="q-gutter-sm row items-center no-wrap">
@@ -21,44 +21,28 @@
               <q-badge color="red" text-color="white" floating> 2 </q-badge>
               <q-tooltip>Notifications</q-tooltip>
             </q-btn>
-            <q-btn round flat @click="openAvatar" class="avatar-btn">
-              <q-avatar size="40px">
-                <img :src="userImg" />
-              </q-avatar>
-            </q-btn>
+            <router-link :to="'/users'">
+              <q-btn round flat>
+                <button @click="toggleSidebar">
+                  <q-avatar size="40px">
+                    <img :src="userImg" style="width: 40px" />
+                  </q-avatar>
+                </button>
+                <q-tooltip>Account</q-tooltip>
+              </q-btn>
+            </router-link>
           </div>
         </q-toolbar>
       </q-header>
 
-      <q-dialog v-model="isAvatarOpened" position="right">
-        <q-card>
-          <q-toolbar class="avatar-dialog">
-            <q-toolbar-title class="avatar-dialog-title">
-              <q-avatar size="50px">
-                <img :src="userImg" />
-              </q-avatar>
-              <span>{{ user.user_full_name }}</span>
-            </q-toolbar-title>
-          </q-toolbar>
+      <!-- -- AVATAR-sidebar  ---->
+      <div style="margin-top: 60px">
+        <div :class="{ 'fixed-right': isSidebarFixed }" class="side-bar">
+          Sidebar Content
+        </div>
+      </div>
 
-          <q-list bordered>
-            <q-item clickable v-ripple v-for="opt in avatarOptions">
-              <router-link :to="`${opt.path}`" class="avatar-link">
-                <q-item-section class="avatar-link-section1" :value="opt">
-                  <q-icon
-                    size="30px"
-                    :name="`${opt.icon}`"
-                    class="avatar-link-icon"
-                  />
-                </q-item-section>
-                <q-item-section class="avatar-link-section2">
-                  <span class="div2">{{ opt.text }}</span>
-                </q-item-section>
-              </router-link>
-            </q-item>
-          </q-list>
-        </q-card>
-      </q-dialog>
+      <!-- -- AVATAR-sidebar  ---->
 
       <q-drawer
         v-model="drawer"
@@ -115,104 +99,78 @@ import { onBeforeMount, ref } from "vue";
 
 export default {
   setup() {
-    const drawer = ref(false);
     const project = ref();
     const leftDrawerOpen = ref(false);
     let userImg = ref("");
     let user = ref({
       user_id: "",
-      user_full_name: "",
+      user_name: "",
       user_image_url: "",
     });
-    const isAvatarOpened = ref(false);
 
-    const avatarOptions = ref([
-      { text: "Thông tin tài khoản", path: "/users", icon: "account_circle" },
-      { text: "Cài đặt", path: "#", icon: "settings" },
-      { text: "Ngôn ngữ", path: "#", icon: "language" },
-      { text: "Giao diện", path: "#", icon: "toggle_on" },
-      { text: "Trợ giúp", path: "#", icon: "help" },
-      { text: "Đăng xuất", path: "/login", icon: "logout" },
-    ]);
-
-    function openAvatar() {
-      isAvatarOpened.value = !isAvatarOpened.value;
+    const isSidebarFixed = ref(false);
+    function toggleSidebar() {
+      isSidebarFixed.value = !isSidebarFixed.value;
     }
 
     function toggleLeftDrawer() {
       leftDrawerOpen.value = !leftDrawerOpen.value;
     }
 
-    function getUserFromLocalStorage() {
+    async function getUserFromLocalStorage() {
       const userData = localStorage.getItem("user");
       if (userData) {
-        user.value = JSON.parse(userData);
-        userImg.value = user.value.user_image_url;
+        user = JSON.parse(userData);
+        userImg.value = user.user_image_url;
       }
     }
 
     onBeforeMount(async () => {
-      getUserFromLocalStorage();
-      project.value = await projectService.getAllProject(user.value.user_id, 2);
+      await getUserFromLocalStorage();
+      project.value = await projectService.getAllProject(user.user_id, 2);
+      project.value = await projectService.getAllProject(user.user_id, 2);
     });
 
     return {
       leftDrawerOpen,
       toggleLeftDrawer,
       project,
-      user,
       userImg,
-      drawer,
-      isAvatarOpened,
-      openAvatar,
-      avatarOptions,
+      drawer: ref(false),
+      isSidebarFixed,
+      toggleSidebar,
     };
   },
 };
 </script>
 
 <style scoped>
-/*----------AVATAR-DIALOG --------*/
-.avatar-dialog {
-  height: 70px;
-  font-size: 20px;
-  background: var(--secondary-color);
-  color: white;
-}
-
-.q-dialog__inner.flex > .q-card {
+.side-bar {
+  z-index: 1000;
+  position: fixed ;
+  top: 50px;
+  right: -100%;
+  height: 100%;
   width: 250px;
-  margin-bottom: 205px;
+  background: teal;
+
+  height: 400px;
+  border-radius: 10px;
+  transition: right 1s;
 }
-.avatar-dialog-title {
-  display: flex;
-  align-items: center;
-  font-size: 20px;
-  background: var(--secondary-color);
+.fixed-right {
+  position: fixed;
+  top: 50px;
+  right: 0;
+  transition: right 1s;
+}
+
+/* ----- AVATAR-SIDE-BAR */
+
+.header-text {
+  margin-top: 50px;
   color: white;
 }
-.avatar-dialog-title > span {
-  margin-left: 10px;
-}
-
-/*----------AVATAR-LINK --------*/
-.avatar-link {
-  width: 200px;
-  text-decoration: none;
-  color: inherit;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.avatar-link-section1 {
-  max-width: fit-content;
-}
-
-.avatar-link-icon {
-  color: var(--secondary-color);
-}
-/*----------AVATAR-LINK --------*/
 
 .side-bar-title {
   margin-top: 10px;
@@ -239,6 +197,11 @@ export default {
   font-weight: bold;
 }
 
+.project-item-name {
+  margin-left: 10px;
+  margin-bottom: 0;
+}
+
 .side-bar-item {
   line-height: 45px;
   overflow: hidden;
@@ -261,10 +224,5 @@ export default {
   white-space: nowrap;
   overflow-x: hidden;
   text-overflow: ellipsis;
-}
-
-.project-item-name {
-  margin-left: 10px;
-  margin-bottom: 0;
 }
 </style>

@@ -3,13 +3,36 @@
     <div class="container">
       <div class="header">
         <div class="search-filter-class">
-          <q-input outlined label="Tim theo ten" v-model="searchName" class="search-class">
-          </q-input>
-          <div class="filter-class">FILTER</div>
+          <q-input
+            outlined
+            v-model="searchProjectName"
+            placeholder="Tìm theo tên"
+            class="bg-white input-box"
+          />
+
+          <div class="q-gutter-y-md column filter" style="max-width: 300px">
+            <q-select
+              color="teal"
+              filled
+              v-model="filterInput"
+              :options="options"
+              label="Bộ lọc"
+            >
+              <template v-slot:append>
+                <q-icon name="cancel" @click.stop.prevent="cancelHandler" />
+              </template>
+            </q-select>
+          </div>
         </div>
 
         <div class="create-project-class">
-          <q-btn flat round class="q-btn-class" style="bottom: 2px; right: 5px" @click="createProject">
+          <q-btn
+            flat
+            round
+            class="q-btn-class"
+            style="bottom: 2px; right: 5px"
+            @click="createProject"
+          >
             <q-icon name="add" class="plus-icon"></q-icon>
             <q-tooltip style="font-size: 14px; font-weight: 700">
               create project
@@ -19,32 +42,38 @@
       </div>
       <q-dialog v-model="isModalVisible">
         <q-card>
-          <CreateProjectModal v-if="isModalVisible" @close="closeModal"></CreateProjectModal>
+          <CreateProjectModal
+            v-if="isModalVisible"
+            @close="closeModal"
+          ></CreateProjectModal>
         </q-card>
-        
       </q-dialog>
-      <projectBox :searchName="searchName" :project="project"></projectBox>
+      <projectBox
+        searchProjectName="searchProjectName"
+        :project="filteredProjectByOption"
+      ></projectBox>
     </div>
   </q-page>
 </template>
 
 <script>
-import { ref, onBeforeMount } from "vue";
+import { ref, onBeforeMount, computed } from "vue";
 import ProjectBox from "../components/ProjectBox.vue";
 import projectService from "../services/project.service";
-import CreateProjectModal from "../components/CreateProjectModal.vue"
-import { is } from "quasar";
+import CreateProjectModal from "../components/CreateProjectModal.vue";
 
 export default {
   components: {
     projectBox: ProjectBox,
-    CreateProjectModal  
+    CreateProjectModal,
   },
   setup() {
-    const searchName = ref();
-    const project = ref([]);
+    const searchProjectName = ref();
+    const projects = ref([]);
     let user = ref();
-    let isModalVisible = ref(false)
+    let isModalVisible = ref(false);
+    const filterInput = ref("Tất cả");
+    const options = ref(["Tất cả", "Cá nhân", "Thành viên"]);
 
     async function getUserFromLocalStorage() {
       const userData = localStorage.getItem("user");
@@ -53,29 +82,59 @@ export default {
       }
     }
 
-    function createProject(){
-      isModalVisible.value = !isModalVisible.value
+    function createProject() {
+      isModalVisible.value = !isModalVisible.value;
     }
-    function closeModal(){
-      isModalVisible.value = !isModalVisible.value  
+    function closeModal() {
+      isModalVisible.value = !isModalVisible.value;
     }
 
     onBeforeMount(async () => {
       await getUserFromLocalStorage();
-      project.value = await projectService.getAllProject(user.user_id, 2);
-      project.value.forEach((item, index) => {
-
-        //a/sdfasdfas
-        // console.log(`Project[${index}]:`, item);
-      });
+      projects.value = await projectService.getAllProject(user.user_id, 2);
     });
 
+    const filteredProjectByOption = computed(() => {
+      let tempProjects;
+      if (filterInput.value == "Tất cả") {
+        tempProjects = projects.value;
+        console.log();
+      } else if (filterInput.value == "Cá nhân") {
+        tempProjects = projects.value.filter(
+          (pro) => pro.user.user_id === user.user_id
+        );
+      } else
+        tempProjects = projects.value.filter(
+          (pro) => pro.user.user_id !== user.user_id
+        );
+
+      if (!searchProjectName.value) {
+        return tempProjects;
+      }
+
+      return tempProjects.filter((pro) =>
+        pro.project_name
+          .toLowerCase()
+          .includes(searchProjectName.value.toLowerCase())
+      );
+    });
+
+    function cancelHandler() {
+      filterInput.value = "Tất cả";
+      searchProjectName.value = ""
+    }
+
     return {
-      searchName,
-      project,
+      searchProjectName,
+      projects,
       isModalVisible,
       createProject,
-      closeModal
+      closeModal,
+      filteredProjectByOption,
+
+      filterInput,
+      options,
+      cancelHandler,
     };
   },
 };
@@ -89,11 +148,8 @@ export default {
 .header {
   margin: auto;
   margin-top: 15px;
+  margin-bottom: 30px;
   width: 90%;
-  display: flex;
-}
-
-.header {
   display: flex;
   justify-content: space-between;
 }
@@ -102,17 +158,9 @@ export default {
   display: flex;
 }
 
-.search-class {
-  width: 300px;
-  margin-right: 20px;
-}
-
-.filter-class {
-  width: 100px;
-  border: 2px solid rgb(173, 102, 21);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.input-box {
+  width: 400px;
+  margin-right: 10px;
 }
 
 .create-project-class {
