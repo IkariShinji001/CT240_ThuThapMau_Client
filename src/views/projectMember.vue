@@ -10,13 +10,10 @@
             <div class="name">{{ projectOwner.user_full_name }}</div>
           </div>
         </div>
-        <div class="member-title">
+        <div class="member-title" v-if="projectOwner">
           <h3>Thành viên</h3>
-          <q-icon
-            name="group_add"
-            class="add-icon"
-            @click="openAdd = true"
-          ></q-icon>
+          <q-icon v-if="projectOwner.user_id === userId" name="group_add" class="add-icon"
+            @click="openAdd = true"></q-icon>
         </div>
 
         <q-separator size="5px" />
@@ -30,10 +27,8 @@
                 </div>
               </div>
               <div class="function">
-                <q-icon
-                  name="cancel"
-                  @click="removeMemberFromProject(member.user_id)"
-                ></q-icon>
+                <q-icon v-if="projectOwner.user_id === userId" name="cancel"
+                  @click="removeMemberFromProject(member.user_id)"></q-icon>
               </div>
             </div>
           </div>
@@ -47,29 +42,18 @@
           </q-card-section>
           <q-card-section>
             <div class="input-add-container">
-              <q-input
-                class="user-email-add"
-                outlined
-                v-model="userEmailAdd"
-                label="Nhập email của người bạn mời"
-              >
+              <q-input class="user-email-add" outlined v-model="userEmailAdd" label="Nhập email của người bạn mời">
               </q-input>
-              <q-btn
-                color="primary"
-                class="btn-add"
-                @click="handleAddUserToListWait"
-                >Thêm</q-btn
-              >
+              <q-btn color="primary" class="btn-add" @click="handleAddUserToListWait">Thêm</q-btn>
             </div>
             <div v-if="memberWaitToAdd.length > 0">
               <h3>Danh sách thành viên đang chọn</h3>
               <div v-for="(userMail, i) in memberWaitToAdd" class="member-add">
-                <h3 class="user_mail">{{ i + 1 + ".   " + userMail.user_email }}</h3>
-                <q-icon
-                  class="icon-cancel"
-                  name="cancel"
-                  @click="handleRemoveUserFromListWait(userMail.user_email)"
-                ></q-icon>
+                <h3 class="user_mail">
+                  {{ i + 1 + ". " + userMail.user_email }}
+                </h3>
+                <q-icon class="icon-cancel" name="cancel"
+                  @click="handleRemoveUserFromListWait(userMail.user_email)"></q-icon>
               </div>
             </div>
             <q-btn class="btn-submit" color="primary" @click="handleSubmit">Mời</q-btn>
@@ -101,14 +85,16 @@ export default {
 
     onBeforeMount(async () => {
       const data = await projectMemberService.getProjectMember(projectId, 2);
+      console.log(data);
       projectMemer.value = data.map((value) => {
         return value.id.user;
       });
-      projectOwner.value = projectMemer.value.find((user) => {
-        return user.user_id === userId;
+      projectOwner.value = data.find((element) => {
+        return element.id.project.user.user_id === element.id.user.user_id;
       });
+      projectOwner.value = projectOwner.value.id.user;
       projectMemer.value = projectMemer.value.filter((value) => {
-        return value.user_id !== userId;
+        return value.user_id !== projectOwner.value.user_id;
       });
     });
 
@@ -136,15 +122,18 @@ export default {
       }
     };
 
-    const handleSubmit = async () =>{
+    const handleSubmit = async () => {
       const listUserIdAdd = memberWaitToAdd.value.map((user) => user.user_id);
       try {
-        await projectMemberService.addMembersToProject(listUserIdAdd, projectId);
+        await projectMemberService.addMembersToProject(
+          listUserIdAdd,
+          projectId
+        );
         toast.success("Thêm thành công");
       } catch (error) {
         console.log(error);
       }
-    }
+    };
 
     const handleAddUserToListWait = async () => {
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -154,6 +143,25 @@ export default {
         toast.error("Không đúng định dạng email");
       }
 
+      for (const member of projectMemer.value) {
+        if (member.user_email === email) {
+          toast.error("Thành viên này đã có trong dự án");
+          return;
+        }
+      }
+
+      if (email === projectOwner.value.user_email) {
+        toast.error("Thành viên này đã có trong dự án");
+        return;
+      }
+
+      for (const member of memberWaitToAdd.value) {
+        if (member.user_email === email) {
+          toast.error("Thành viên này đã có trong dự án");
+          return;
+        }
+      }
+
       try {
         const user = await userService.getUserByEmail(email);
         if (user) {
@@ -161,11 +169,11 @@ export default {
           userEmailAdd.value = "";
           return;
         }
-        
+
         toast.error("Không tồn tại email này");
         return;
       } catch (error) {
-        console.log(error)
+        console.log(error);
         toast.error("Không tồn tại email này");
       }
     };
@@ -186,7 +194,8 @@ export default {
       userEmailAdd,
       handleAddUserToListWait,
       handleRemoveUserFromListWait,
-      handleSubmit  
+      handleSubmit,
+      userId,
     };
   },
 };

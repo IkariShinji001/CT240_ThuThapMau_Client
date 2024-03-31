@@ -4,7 +4,7 @@
       <div class="banner">
         <img src="https://gstatic.com/classroom/themes/img_learnlanguage.jpg" />
         <p class="project_name">{{ project.project_name }}
-        <br>
+          <br>
         <p class="status_text">Trạng thái: {{ project.project_status }}</p>
         <p class="status_text">Ngày khởi tạo dự án: {{ formatDateTime(project.project_created_at) }}</p>
         </p>
@@ -15,20 +15,20 @@
           <q-icon @click="goToMember" name="group"></q-icon>
         </div>
       </div>
-      <q-input
-        outlined
-        v-model="collectionName"
-        label="Tìm theo tên đợt thu thập"
-      >
-      </q-input>
+      <div class="input-search">
+        <q-input :class="`search-name`" outlined v-model="collectionName" label="Tìm theo tên đợt thu thập"
+          v-if="isOwner">
+        </q-input>
+        <q-input :class="`search-name-member`" outlined v-model="collectionName" label="Tìm theo tên đợt thu thập"
+          v-else>
+        </q-input>
+        <q-btn v-if="isOwner" color="primary" class="btn-add" @click="openAdd = true">Thêm đợt thu thập</q-btn>
+      </div>
+
 
       <div>
-        <div
-          v-for="collection in filteredCollection"
-          :key="collection.collection_id"
-          class="collection"
-          @click="handleGoToCollectionDetail(collection.collection_id)"
-        >
+        <div v-for="collection in filteredCollection" :key="collection.collection_id" class="collection"
+          @click="handleGoToCollectionDetail(collection.collection_id)">
           <div class="icon-wrapper">
             <div class="icon-container">
               <q-icon name="article" class="collection-icon"></q-icon>
@@ -50,21 +50,36 @@
         <q-card class="card-update">
           <h3>Cập nhật thông tin dự án</h3>
           <q-card-section>
-            <q-input
-              outlined
-              label="Tên dự án"
-              class="input"
-              v-model="projectUpdate.project_name"
-            ></q-input>
-            <q-select
-              outlined
-              label="Trạng thái của dự án"
-              class="input"
-              v-model="projectUpdate.project_status"
-              :options="projectStatusOptions"
-            ></q-select>
+            <q-input outlined label="Tên dự án" class="input" v-model="projectUpdate.project_name"></q-input>
+            <q-select outlined label="Trạng thái của dự án" class="input" v-model="projectUpdate.project_status"
+              :options="projectStatusOptions"></q-select>
 
             <q-btn color="primary" class="submit-update" @click="handleUpdateProject">Cập nhật</q-btn>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+
+      <q-dialog v-model="openAdd">
+        <q-card class="card-update">
+          <h3>Thêm đợt thu thập mới</h3>
+          <q-card-section>
+            <q-input outlined label="Tên đợt thu thập" class="input" v-model="collectionAdd.collection_name"></q-input>
+            <q-input outlined type="text-area" label="Thông tin mô tả cho đợt thu thập" class="input"
+              v-model="collectionAdd.collection_description"></q-input>
+            <div class="date-add">
+              <q-input outlined label="Ngày bắt đầu đợt thu thập" class="input date"
+                v-model="collectionAdd.collection_start" type="date"></q-input>
+              <q-input outlined label="Ngày kết thúc đợt thu thập" class="input date"
+                v-model="collectionAdd.collection_end" type="date"></q-input>
+            </div>
+
+            <q-file label="Hình ảnh cho đợt thu thập" outlined v-model="collectionAdd.file">
+              <template v-slot:prepend>
+                <q-icon name="cloud_upload" />
+              </template>
+            </q-file>
+
+            <q-btn color="primary" class="submit-update" @click="handleAddCollection">Thêm đợt thu thập</q-btn>
           </q-card-section>
         </q-card>
       </q-dialog>
@@ -73,16 +88,17 @@
 </template>
 
 <script>
-import { computed, onBeforeMount, ref, reactive } from "vue";
+import { computed, onBeforeMount, ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 import projectService from "../services/project.service";
 import collectionService from "../services/collection.service";
-import projectMemberService from "../services/projectMember.service";
 import formatDate from "../util/formatDate";
+import { useQuasar } from 'quasar'
 export default {
   setup() {
+    const $q = useQuasar()
     const route = useRoute();
     const collectionName = ref();
     const project = ref();
@@ -92,15 +108,51 @@ export default {
     const toast = useToast();
     const openUpdate = ref();
     const isOwner = ref();
-    const member = ref();
+    const openAdd = ref();
+    const projectId = route.params.id;
+
     const projectUpdate = reactive({
       project_name: "",
       project_status: "",
     });
 
+    const collectionAdd = reactive({
+      collection_name: "",
+      collection_start: "",
+      collection_end: "",
+      collection_description: "",
+      collection_created_at: "",
+      file: null,
+      project_id: projectId,
+      user_id: user_id,
+    })
+
     const projectStatusOptions = ref(["Đang hoạt động", "Dừng hoạt động"]);
 
-    const projectId = route.params.id;
+    watch(
+      [() => collectionAdd.collection_start, () => collectionAdd.collection_end],
+      ([newStart, newEnd], [oldStart, oldEnd]) => {
+        if (newEnd && newStart && newEnd < newStart) {
+          collectionAdd.collection_end = collectionAdd.collection_start;
+        }
+      }
+    );
+
+    const handleAddCollection = async () => {
+      $q.loading.show();
+      try {
+        collectionAdd.collection_created_at = new Date();
+        const newCollection = await collectionService.createCollection(collectionAdd);
+        collections.value.push(newCollection);
+        console.log(collections.value);
+        toast.success("Đã thêm đợt thu thập thành công");
+      } catch (error) {
+        console.log(error)
+      } finally {
+        $q.loading.hide();
+      }
+
+    }
 
     onBeforeMount(async () => {
       project.value = await projectService.getProjectById(projectId);
@@ -111,7 +163,7 @@ export default {
     });
 
     const goToMember = () => {
-      router.push({path:`/projects/${projectId}/members` });
+      router.push({ path: `/projects/${projectId}/members` });
     }
 
     const filteredCollection = computed(() => {
@@ -138,7 +190,7 @@ export default {
       openUpdate.value = true;
     };
 
-    const handleUpdateProject = async () =>{
+    const handleUpdateProject = async () => {
       try {
         await projectService.updateProjectById(projectId, projectUpdate);
         toast.success("Dự án đã cập nhật thông tin thành công");
@@ -166,7 +218,10 @@ export default {
       projectStatusOptions,
       handleUpdateProject,
       isOwner,
-      goToMember
+      goToMember,
+      openAdd,
+      collectionAdd,
+      handleAddCollection
     };
   },
 };
@@ -188,6 +243,7 @@ img {
   height: 50%;
   border-radius: 10px;
 }
+
 .project_name {
   color: white;
   position: absolute;
@@ -278,22 +334,22 @@ h4 {
   color: rgb(10, 10, 137);
 }
 
-.card-update{
+.card-update {
   max-width: 1000px;
   width: 800px;
 }
 
-.input{
+.input {
   font-size: 20px;
   margin: 10px 0;
 }
 
-h3{
+h3 {
   font-size: 32px;
   text-align: center;
 }
 
-.submit-update{
+.submit-update {
   display: flex;
   margin: 0 auto;
   font-size: 20px;
@@ -301,14 +357,40 @@ h3{
   margin-top: 20px;
 }
 
-.status_text{
+.status_text {
   margin: 0 !important;
   padding: 0 !important;
   font-size: 20px;
 }
 
-.groups{
-    right: 100px;
+.groups {
+  right: 100px;
+}
+
+.input-search {
+  display: flex;
+  justify-content: space-between;
+}
+
+.search-name {
+  width: 75%;
+  max-width: 100%;
+}
+
+.search-name-member {
+  width: 100% !important;
+}
+
+.btn-add {
+  width: 20%;
+}
+
+.date-add {
+  display: flex;
+  justify-content: space-between;
+}
+
+.date {
+  width: 45%;
 }
 </style>
-../services/projectMember.service

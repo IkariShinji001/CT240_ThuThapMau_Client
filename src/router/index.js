@@ -47,6 +47,10 @@ const router = createRouter({
       ],
       component: () => import("../layouts/DashBoard.vue"),
     },
+    // {
+    //   path: "/socket",
+    //   component: () => import("../views/TestSocket.vue"),
+    // },
     {
       path: "/login",
       name: "login",
@@ -76,6 +80,21 @@ const router = createRouter({
         title: "Đăng ký tài khoản",
       },
       component: () => import("../views/Signup.vue"),
+    },
+    {
+      path: "/user/:id",
+      meta: {
+        title: "Thông tin người dùng",
+      },
+      component: () => import("../views/User.vue"),
+    },
+    {
+      path: "/collection/:collection_id/user/:user_id",
+      name: "Tạo from",
+      meta: {
+        title: "Tạo form",
+      },
+      component: () => import("../views/CreateForm.vue"),
     },
     // {
     //   path: '/:pathMatch(.*)*',
