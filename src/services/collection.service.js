@@ -8,8 +8,19 @@ class CollectionsService {
     return (await api.get(`${this.path}/projects/${projectId}`)).data;
   }
 
-
-  
+  async createCollection(collection) {
+    const formData = new FormData();
+    for (const key in collection) {
+      formData.append(key, collection[key]);
+    }
+    return (
+      await api.post(`${this.path}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+    ).data;
+  }
 }
 
 export default new CollectionsService();
