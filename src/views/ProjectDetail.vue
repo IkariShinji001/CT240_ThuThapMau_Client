@@ -79,7 +79,7 @@ import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 import projectService from "../services/project.service";
 import collectionService from "../services/collection.service";
-import projectMemberService from "../services/projectMember";
+import projectMemberService from "../services/projectMember.service";
 import formatDate from "../util/formatDate";
 export default {
   setup() {

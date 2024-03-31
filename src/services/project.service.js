@@ -24,8 +24,8 @@ class ProjectService {
     return (await api.get(`${this.path}/${projectId}/users/${userId}`)).data;
   }
 
-  async getAllProject(userId){
-    return (await api.get(`${this.path}/users/${userId}`, {params:{accept_status:2}})).data
+  async getAllProject(userId, accept_status){
+    return (await api.get(`${this.path}/users/${userId}`, {params:{accept_status}})).data
   }
 }
 
