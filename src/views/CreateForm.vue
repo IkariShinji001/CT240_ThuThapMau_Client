@@ -9,7 +9,6 @@
           <q-input outlined class="input" v-model="attributeName.collection_attribute_name" label="Nhập trường mới" />
           <q-icon name="delete" @click="deleteInput(index)" class="icon-delete"></q-icon>
         </div>
-
         <q-input class="input" outlined label="Ảnh (Optional)" disable></q-input>
       </div>
       <div>

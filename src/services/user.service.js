@@ -10,6 +10,10 @@ class UserService {
     const data = (await api.post(`${this.path}/login`, user)).data;
     return data;
   }
+  async signup(user) {
+    console.log(user);
+    return (await api.post(`${this.userPath}`, user)).data;
+  }
 
   async verifyUser() {
     try {
