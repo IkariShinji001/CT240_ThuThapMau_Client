@@ -11,15 +11,15 @@ const router = createRouter({
         requiresAuth: true,
       },
       children: [
-        // {
-        //   path: "/",
-        //   name: "Main",
-        //   meta: {
-        //     title: "Trang chủ",
-        //     requiresAuth: true,
-        //   },
-        //   component: () => import("../views/ProjectDetail.vue"),
-        // },
+        {
+          path: "/",
+          name: "Main",
+          meta: {
+            title: "Trang chủ",
+            requiresAuth: true,
+          },
+          component: () => import("../views/Project.vue"),
+        },
         {
           path: "projects/:id",
           name: "ProjectDetail",
@@ -35,6 +35,21 @@ const router = createRouter({
             title: "Dự án",
           },
           component: () => import("../views/ProjectMember.vue"),
+        },
+        {
+          path: "/notifications",
+          name: "Thông báo",
+          meta: {
+            title: "Dự án",
+          },
+          component: () => import("../views/Notifications.vue"),
+        },
+        {
+          path: "/user/:id",
+          meta: {
+            title: "Thông tin người dùng",
+          },
+          component: () => import("../views/User.vue"),
         },
         {
           path: "/projects/:project_id/collections/:collection_id",
@@ -77,13 +92,16 @@ const router = createRouter({
       },
       component: () => import("../views/Signup.vue"),
     },
+
+    // THem moisw?/
     {
-      path: "/user/:id",
+      path: "/users",
       meta: {
-        title: "Thông tin người dùng",
+        title: "Đăng ký tài khoản",
       },
-      component: () => import("../views/User.vue"),
+      component: () => import("../layouts/test.vue"),
     },
+
     {
       path: "/collection/:collection_id/user/:user_id",
       name: "Tạo from",

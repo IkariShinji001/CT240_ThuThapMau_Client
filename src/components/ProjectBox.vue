@@ -1,62 +1,101 @@
 <template>
-    <div class="q-pa-md row items-start q-gutter-md">
-      <q-card class="my-card" flat bordered>
-        <q-img
-          src="https://cdn.quasar.dev/img/parallax2.jpg"
-        />
-  
-        <q-card-section>
-          <div class="text-overline text-orange-9">Overline</div>
-          <div class="text-h5 q-mt-sm q-mb-xs">Title</div>
-          <div class="text-caption text-grey">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </div>
-        </q-card-section>
-  
-        <q-card-actions>
-          <q-btn flat color="primary" label="Share" />
-          <q-btn flat color="secondary" label="Book" />
-  
-          <q-space />
-  
-          <q-btn
-            color="grey"
-            round
-            flat
-            dense
-            :icon="expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-            @click="expanded = !expanded"
-          />
+  <div class="q-pa-md img-container">
+    <div v-for="pro in project" :key="pro.project_id" class="list-items">
+      <q-card class="q-card-class " v-if="pro.project_status == 'Đang hoạt động' || (pro.project_status == 'Dừng hoạt động' && pro.user.user_id == user.user_id )">
+        <!-- router -->
+        <router-link :to="'/projects/' + pro.project_id">     
+          <q-img :src="pro.project_image_url" class="q-img-class" />
+          <q-card-section>
+            <div class="row no-wrap items-center">
+              <div class="col text-h6 ellipsis">
+                {{ pro.project_name }}
+              </div>
+              <div v-if="pro.project_status == 'Đang hoạt động'">
+                <q-icon
+                  style="color: green"
+                  size="20px"
+                  name="check_circle"
+                ></q-icon>
+              </div>
+              <div v-else>
+                <q-icon name="cancel" size="20px" style="color: red"></q-icon>
+              </div>
+            </div>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none">
+            <div class="text-subtitle1">{{ pro.user.user_full_name }}</div>
+          </q-card-section>
+        </router-link>
+
+        <q-separator />
+        <q-card-actions class="q-card-action-class">
+          ngày tạo: {{ formatDate(pro.project_created_at) }}
         </q-card-actions>
-  
-        <q-slide-transition>
-          <div v-show="expanded">
-            <q-separator />
-            <q-card-section class="text-subtitle2">
-              {{ lorem }}
-            </q-card-section>
-          </div>
-        </q-slide-transition>
       </q-card>
     </div>
-  </template>
-  
-  <script>
-  import { ref } from 'vue'
-  
-  export default {
-    setup () {
-      return {
-        expanded: ref(false),
-        lorem: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
-      }
+  </div>
+</template>
+
+<script>
+import { ref, watchEffect, onBeforeMount } from "vue";
+
+export default {
+  props: {
+    project: Object,
+    user: Object
+  },
+
+  setup(props) {
+    const project = ref(props.project);
+    const user = ref(props.user)
+
+    watchEffect(() => {
+      project.value = props.project;
+      user.value = props.user;
+    });
+
+    function formatDate(dateString) {
+      return dateString.slice(0, 10);
     }
-  }
-  </script>
-  
-  <style lang="sass" scoped>
-  .my-card
-    width: 100%
-    max-width: 350px
-  </style>
-  
+
+    return {
+      project,
+      user,
+      formatDate,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.img-container {
+  margin-top: 20px;
+  padding: 0 0;
+  display: flex;
+  flex-wrap: wrap; 
+  justify-content: start;
+}
+
+.q-card-class {
+    width: 244px; 
+    margin-right: 10px;
+    margin-top: 15px;
+}
+.q-img-class {
+  height: 100px;
+  border-radius: 5px;
+}
+
+.q-card-action-class {
+  height: 45px;
+  font-weight: 500;
+  color: var(--secondary-color);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+</style>
