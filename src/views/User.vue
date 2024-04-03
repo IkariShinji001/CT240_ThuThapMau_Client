@@ -52,12 +52,14 @@
     setup() {
       const toast = useToast()
       const route = useRoute();
-      const id = route.params.id;
+      const id = JSON.parse(localStorage.getItem("user")).user_id;
       const user = reactive({
         user_name: "",
         user_email: "",
         user_phone_number: "",
       })
+      const user_img = ref()
+      const userImage = ref();
 
       onBeforeMount(async () => {
         try {
@@ -66,8 +68,20 @@
           user.user_name = res.user_full_name;
           user.user_email = res.user_email;
           user.user_phone_number = res.user_phone_number;
+          userImage.value = res.user_image_url
         } catch (e) { }
       });
+
+      const editImg = async () => {
+        userImage.value = URL.createObjectURL(user_img.value);
+        try {
+          const user = await userService.updateUserImage(id, user_img.value);
+          console.log(user);
+          userImage.value = user.user_image_url;
+        } catch (error) {
+          console.log(error);
+        }
+      }
 
       const editUser = async () => {
         try {

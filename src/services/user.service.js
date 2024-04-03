@@ -3,7 +3,6 @@ class UserService {
   constructor() {
     this.path = "/public";
     this.userPath = "/api/v1/users";
-    this.userPath = "/api/v1/users";
   }
 
   async login(user) {
