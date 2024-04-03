@@ -23,8 +23,12 @@
             <router-link class="forget-pw" to="/forget-password">Quên mật khẩu</router-link>
           </section>
           <div class="btn-container">
-            <q-btn class="btn" @click="handleLogin">Đăng nhập</q-btn>
+              <q-btn class="btn" @click="handleLogin">Đăng nhập</q-btn>
           </div>
+          <div class="signup-pw" >
+            <span>Bạn chưa có tài khoản.</span>
+              <router-link to="/signup">Đăng ký</router-link>
+            </div>
         </div>
       </section>
       <div class="image-container">
@@ -143,6 +147,7 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-bottom: 50px;
 }
 
 .forget-pw {
@@ -153,8 +158,12 @@ h1 {
   margin: 10px 0;
 }
 
-.forget-pw:hover {
+.forget-pw:hover .signup-pw:hover{
   color: gray;
+}
+.signup-pw{
+  display: flex;
+  justify-content: center;
 }
 
 .btn-container {

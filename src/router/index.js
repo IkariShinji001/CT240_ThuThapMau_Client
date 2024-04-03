@@ -26,39 +26,42 @@ const router = createRouter({
           meta: {
             title: "Dự án",
           },
-          component: () => import("../views/ProjectDetail.vue")
+          component: () => import("../views/ProjectDetail.vue"),
         },
         {
-          path: '/projects/:id/members',
-          name: 'sd',
-          meta:{
-            title: 'Dự án'
+          path: "/projects/:id/members",
+          name: "sd",
+          meta: {
+            title: "Dự án",
           },
-          component: () => import("../views/ProjectMember.vue")
+          component: () => import("../views/ProjectMember.vue"),
         },
         {
-          path: '/notifications',
-          name: 'Thông báo',
-          meta:{
-            title: 'Dự án'
+          path: "/notifications",
+          name: "Thông báo",
+          meta: {
+            title: "Dự án",
           },
-          component: () => import("../views/Notifications.vue")
+          component: () => import("../views/Notifications.vue"),
         },
         {
-          path: '/collection-forms/:id',
-          name: 'Form',
-          meta:{
-            title: 'Form đã điền'
+          path: "/user",
+          meta: {
+            title: "Thông tin người dùng",
           },
-          component: () => import("../views/FormDetail.vue")
-        }
+          component: () => import("../views/User.vue"),
+        },
+        {
+          path: "/projects/:project_id/collections/:collection_id",
+          name: "Chi tiết đợt thu thập",
+          meta: {
+            title: "Chi tiết đợt thu thập",
+          },
+          component: () => import("../views/CollectionDetail.vue"),
+        },
       ],
       component: () => import("../layouts/DashBoard.vue"),
     },
-    // {
-    //   path: "/socket",
-    //   component: () => import("../views/TestSocket.vue"),
-    // },
     {
       path: "/login",
       name: "login",
@@ -95,7 +98,14 @@ const router = createRouter({
         title: "Thông tin người dùng",
       },
       component: () => import("../views/User.vue"),
+    {
+      path: "/users",
+      meta: {
+        title: "Đăng ký tài khoản",
+      },
+      component: () => import("../layouts/test.vue"),
     },
+
     {
       path: "/collection/:collection_id/user/:user_id",
       name: "Tạo from",

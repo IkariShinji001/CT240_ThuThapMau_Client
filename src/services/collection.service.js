@@ -4,6 +4,10 @@ class CollectionsService {
     this.path = "/api/v1/collections";
   }
 
+  async getCollectionById(collectionId) {
+    return (await api.get(`${this.path}/${collectionId}`)).data;
+  }
+
   async getCollectionByProjectId(projectId) {
     return (await api.get(`${this.path}/projects/${projectId}`)).data;
   }

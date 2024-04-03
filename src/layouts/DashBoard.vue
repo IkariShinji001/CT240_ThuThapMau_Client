@@ -4,6 +4,7 @@
       <q-header elevated class="bg-white text-grey-8 q-py-xs" height-hint="58">
         <q-toolbar>
           <q-btn flat dense round @click="drawer = !drawer" aria-label="Menu" icon="menu" />
+          <q-btn flat dense round @click="drawer = !drawer" aria-label="Menu" icon="menu" />
 
             <q-toolbar-title shrink class="text-weight-bold">
               ROOOMM
@@ -37,7 +38,10 @@
           <q-list bordered>
             <q-item clickable v-ripple v-for="opt in avatarOptions">
               <router-link :to="`${opt.path}` + `${user.user_id}`" class="avatar-link">
+            <q-item clickable v-ripple v-for="opt in avatarOptions" :key="opt" >
+              <router-link :to="`${opt.path}`" class="avatar-link">
                 <q-item-section class="avatar-link-section1" :value="opt">
+                  <q-icon size="30px" :name="`${opt.icon}`" class="avatar-link-icon" />
                   <q-icon size="30px" :name="`${opt.icon}`" class="avatar-link-icon" />
                 </q-item-section>
                 <q-item-section class="avatar-link-section2">
@@ -51,18 +55,28 @@
 
       <q-drawer v-model="drawer" show-if-above :width="240" :breakpoint="500" bordered
         style="background-color: var(--secondary-color)" class="q-drawer-container">
+      <q-drawer v-model="drawer" show-if-above :width="240" :breakpoint="500" bordered
+        style="background-color: var(--secondary-color)" class="q-drawer-container">
         <q-item-label header class="text-uppercase side-bar-title">
           Đã tham gia
         </q-item-label>
+        <q-scroll-area class="fit side-bar-container" style="height: 80% !important">
         <q-scroll-area class="fit side-bar-container" style="height: 80% !important">
           <q-list class="side-bar-list-container">
             <div v-for="pro in project" :key="pro.project_id">
               <!-- <router-link :to="'/projects/' + pro.project_id"> -->
               <div @click="goToProject(pro.project_id)">
 
+              <!-- <router-link :to="'/projects/' + pro.project_id"> -->
+              <div @click="goToProject(pro.project_id)">
                 <div class="side-bar-item">
                   <div class="project-item">
                     <q-icon name="task" size="34px" color="yellow">
+                      <q-tooltip max-width="200px" style="
+                            background-color: gray;
+                            color: white;
+                            font-size: 13px;
+                          ">
                       <q-tooltip max-width="200px" style="
                             background-color: gray;
                             color: white;
@@ -76,6 +90,8 @@
                     </span>
                   </div>
                 </div>
+              </div>
+              <!-- </router-link> -->
               </div>
               <!-- </router-link> -->
             </div>
@@ -107,6 +123,23 @@ export default {
       user_image_url: "",
     });
     const isAvatarOpened = ref(false);
+  import { useRouter } from "vue-router";
+  import projectService from "../services/project.service";
+  import { onBeforeMount, ref } from "vue";
+
+  export default {
+    setup() {
+      const router = useRouter();
+      const drawer = ref(false);
+      const project = ref();
+      const leftDrawerOpen = ref(false);
+      let userImg = ref("");
+      let user = ref({
+        user_id: "",
+        user_full_name: "",
+        user_image_url: "",
+      });
+      const isAvatarOpened = ref(false);
 
     const avatarOptions = ref([
       { text: "Thông tin tài khoản", path: `/user/${user.value.user_id}`, icon: "account_circle" },
@@ -117,30 +150,30 @@ export default {
       { text: "Đăng xuất", path: "/login", icon: "logout" },
     ]);
 
-    function openAvatar() {
-      isAvatarOpened.value = !isAvatarOpened.value;
-    }
-
-    function toggleLeftDrawer() {
-      leftDrawerOpen.value = !leftDrawerOpen.value;
-    }
-
-    const goToProject = (project_id) => {
-      router.push({ path: `/projects/${project_id}` });
-    }
-
-    function getUserFromLocalStorage() {
-      const userData = localStorage.getItem("user");
-      if (userData) {
-        user.value = JSON.parse(userData);
-        userImg.value = user.value.user_image_url;
+      function openAvatar() {
+        isAvatarOpened.value = !isAvatarOpened.value;
       }
-    }
 
-    onBeforeMount(async () => {
-      getUserFromLocalStorage();
-      project.value = await projectService.getAllProject(user.value.user_id, 2);
-    });
+      function toggleLeftDrawer() {
+        leftDrawerOpen.value = !leftDrawerOpen.value;
+      }
+
+      function getUserFromLocalStorage() {
+        const userData = localStorage.getItem("user");
+        if (userData) {
+          user.value = JSON.parse(userData);
+          userImg.value = user.value.user_image_url;
+        }
+      }
+
+      const goToProject = (project_id) => {
+        router.replace({ path: `/projects/${project_id}` })
+      }
+
+      onBeforeMount(async () => {
+        getUserFromLocalStorage();
+        project.value = await projectService.getAllProject(user.value.user_id, 2);
+      });
 
     return {
       leftDrawerOpen,
@@ -159,13 +192,14 @@ export default {
 </script>
 
 <style scoped>
-/*----------AVATAR-DIALOG --------*/
-.avatar-dialog {
-  height: 70px;
-  font-size: 20px;
-  background: var(--secondary-color);
-  color: white;
-}
+
+  /*----------AVATAR-DIALOG --------*/
+  .avatar-dialog {
+    height: 70px;
+    font-size: 20px;
+    background: var(--secondary-color);
+    color: white;
+  }
 
 .q-dialog__inner.flex>.q-card {
   width: 250px;
@@ -184,19 +218,19 @@ export default {
   margin-left: 10px;
 }
 
-/*----------AVATAR-LINK --------*/
-.avatar-link {
-  width: 200px;
-  text-decoration: none;
-  color: inherit;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+  /*----------AVATAR-LINK --------*/
+  .avatar-link {
+    width: 200px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-.avatar-link-section1 {
-  max-width: fit-content;
-}
+  .avatar-link-section1 {
+    max-width: fit-content;
+  }
 
 .avatar-link-icon {
   color: var(--secondary-color);
@@ -204,57 +238,57 @@ export default {
 
 /*----------AVATAR-LINK --------*/
 
-.side-bar-title {
-  margin-top: 10px;
-  margin-right: 15px;
-}
+  .side-bar-title {
+    margin-top: 10px;
+    margin-right: 15px;
+  }
 
-.side-bar-container {
-  background-color: var(--secondary-color);
-  height: 100%;
-}
+  .side-bar-container {
+    background-color: var(--secondary-color);
+    height: 100%;
+  }
 
-.side-bar-list-container {
-  margin-top: 10px;
-  height: 450px;
-  overflow-y: auto;
-  border-bottom: 1px solid rgba(224, 224, 224, 0.3);
-  border-top: 1px solid rgba(224, 224, 224, 0.3);
-}
+  .side-bar-list-container {
+    margin-top: 10px;
+    height: 450px;
+    overflow-y: auto;
+    border-bottom: 1px solid rgba(224, 224, 224, 0.3);
+    border-top: 1px solid rgba(224, 224, 224, 0.3);
+  }
 
-.side-bar-title {
-  text-align: center;
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
-}
+  .side-bar-title {
+    text-align: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+  }
 
-.side-bar-item {
-  line-height: 45px;
-  overflow: hidden;
-  display: inline-flex;
-  border-bottom: 1px solid rgba(224, 224, 224, 0.1);
-  width: 100%;
-}
+  .side-bar-item {
+    line-height: 45px;
+    overflow: hidden;
+    display: inline-flex;
+    border-bottom: 1px solid rgba(224, 224, 224, 0.1);
+    width: 100%;
+  }
 
-.side-bar-item:hover {
-  background: #206fac;
-  border-bottom: 1px solid rgba(236, 236, 236, 0.5);
-}
+  .side-bar-item:hover {
+    background: #206fac;
+    border-bottom: 1px solid rgba(236, 236, 236, 0.5);
+  }
 
-.project-item {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  width: 220px;
-  color: white;
-  font-weight: 600;
-  font-size: 17px;
-  white-space: nowrap;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-}
+  .project-item {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    width: 220px;
+    color: white;
+    font-weight: 600;
+    font-size: 17px;
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+  }
 
-.project-item-name {
-  margin-left: 10px;
-  margin-bottom: 0;
-}
+  .project-item-name {
+    margin-left: 10px;
+    margin-bottom: 0;
+  }
 </style>
