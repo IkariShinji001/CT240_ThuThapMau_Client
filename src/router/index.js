@@ -98,6 +98,7 @@ const router = createRouter({
         title: "Thông tin người dùng",
       },
       component: () => import("../views/User.vue"),
+    },
     {
       path: "/users",
       meta: {
