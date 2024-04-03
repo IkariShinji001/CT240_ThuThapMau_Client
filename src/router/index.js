@@ -45,7 +45,7 @@ const router = createRouter({
           component: () => import("../views/Notifications.vue"),
         },
         {
-          path: "/user/:id",
+          path: "/user",
           meta: {
             title: "Thông tin người dùng",
           },
@@ -92,8 +92,6 @@ const router = createRouter({
       },
       component: () => import("../views/Signup.vue"),
     },
-
-    // THem moisw?/
     {
       path: "/users",
       meta: {

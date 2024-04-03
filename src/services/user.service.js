@@ -2,9 +2,8 @@ import api from "./api.service";
 class UserService {
   constructor() {
     this.path = "/public";
-    this.userPath = "/api/v1/users"
     this.userPath = "/api/v1/users";
-
+    this.userPath = "/api/v1/users";
   }
 
   async login(user) {
@@ -23,18 +22,18 @@ class UserService {
   }
 
   async forgetPassword(email) {
-    await api.post(`${this.path}/forget-password`, {email});
+    await api.post(`${this.path}/forget-password`, { email });
   }
 
-  async resetPassword(user_id, password){
-    await api.post(`${this.path}/reset-password`, {user_id, password});
+  async resetPassword(user_id, password) {
+    await api.post(`${this.path}/reset-password`, { user_id, password });
   }
 
-  async getUserId(id){
+  async getUserId(id) {
     return (await api.get(`${this.userPath}/${id}`)).data;
   }
 
-  async update(id, data){
+  async update(id, data) {
     return (await api.patch(`${this.userPath}/${id}`, data)).data;
   }
 
@@ -42,6 +41,14 @@ class UserService {
     return (await api.get(`${this.userPath}/emails/${email}`)).data;
   }
 
+  async updateUserImage(user_id, image) {
+    console.log(user_id, image);
+    const formData = new FormData();
+    formData.append("file", image);
+    return await api.patch(`${this.userPath}/${user_id}/image`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }).data;
+  }
 }
 
 export default new UserService();
