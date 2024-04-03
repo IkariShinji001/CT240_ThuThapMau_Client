@@ -45,13 +45,13 @@
           <CreateProjectModal
             v-if="isModalVisible"
             @close="closeModal"
-            :getNewProject="getNewProject"
+            @getNewProject="getNewProject"
           ></CreateProjectModal>
         </q-card>
       </q-dialog>
       <projectBox
-        searchProjectName="searchProjectName"
         :project="filteredProjectByOption"
+        :user="user"
       ></projectBox>
     </div>
   </q-page>
@@ -83,13 +83,16 @@ export default {
           user.value.user_id,
           2
         );
+        console.log(projects.value[0].user);
       } catch (e) {
         console.log(e);
       }
     });
+
     function getNewProject(pro) {
       projects.value.push(pro);
     }
+
     function getUserFromLocalStorage() {
       const userData = localStorage.getItem("user");
       if (userData) {
@@ -136,6 +139,7 @@ export default {
     return {
       searchProjectName,
       projects,
+      user,
       isModalVisible,
       createProject,
       closeModal,

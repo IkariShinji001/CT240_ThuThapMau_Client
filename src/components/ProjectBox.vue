@@ -1,8 +1,9 @@
 <template>
   <div class="q-pa-md img-container">
     <div v-for="pro in project" :key="pro.project_id" class="list-items">
-      <q-card class="q-card-class">
-        <router-link :to="'/projects/' + pro.project_id">
+      <q-card class="q-card-class " v-if="pro.project_status == 'Đang hoạt động' || (pro.project_status == 'Dừng hoạt động' && pro.user.user_id == user.user_id )">
+        <!-- router -->
+        <router-link :to="'/projects/' + pro.project_id">     
           <q-img :src="pro.project_image_url" class="q-img-class" />
           <q-card-section>
             <div class="row no-wrap items-center">
@@ -37,21 +38,21 @@
 </template>
 
 <script>
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, onBeforeMount } from "vue";
 
 export default {
   props: {
-    searchName: String,
     project: Object,
+    user: Object
   },
 
   setup(props) {
-    const searchName = ref(props.searchName);
     const project = ref(props.project);
+    const user = ref(props.user)
 
     watchEffect(() => {
-      searchName.value = props.searchName;
       project.value = props.project;
+      user.value = props.user;
     });
 
     function formatDate(dateString) {
@@ -59,8 +60,8 @@ export default {
     }
 
     return {
-      searchName,
       project,
+      user,
       formatDate,
     };
   },
@@ -71,15 +72,16 @@ export default {
 .img-container {
   margin-top: 20px;
   padding: 0 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 242px);
-  grid-gap: 15px;
+  display: flex;
+  flex-wrap: wrap; 
+  justify-content: start;
 }
 
 .q-card-class {
-  width: 244px;
+    width: 244px; 
+    margin-right: 10px;
+    margin-top: 15px;
 }
-
 .q-img-class {
   height: 100px;
   border-radius: 5px;

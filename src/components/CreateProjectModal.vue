@@ -47,12 +47,15 @@
 import { ref, onBeforeMount } from "vue";
 import projectService from "../services/project.service";
 import projectMemberService from "../services/projectMember.service";
-
+import {useQuasar} from "quasar"
+import { useToast } from "vue-toastification";
 export default {
   props: {
     project: Object,
   },
   setup(props, { emit }) {
+    const $q = useQuasar()
+    const toast = useToast();
     const project_name = ref("");
     const fileUploaded = ref(null);
     let user = ref();
@@ -72,6 +75,10 @@ export default {
     });
     async function createProject(e) {
       e.preventDefault();
+      $q.loading.show({
+        message: 'Đang tạo dự án mới ... ',
+      })
+
       try {
         const date = new Date();
         const formattedDate = date.toISOString().split("T")[0];
@@ -83,8 +90,7 @@ export default {
         fd.append("file", fileUploaded.value);
         fd.append("user_id", user.value.user_id);
         const createdProject = await projectService.createProject(fd);
-
-        console.log(fileUploaded.value);
+        
         try {
           await projectMemberService.addOwnerToProjectMember(
             user.value.user_id,
@@ -97,6 +103,9 @@ export default {
       } catch (e) {
         console.log(e);
       }
+      $q.loading.hide()
+      toast.success("Đã thêm dự án thành công");
+      closeModal()
     }
 
     return {
