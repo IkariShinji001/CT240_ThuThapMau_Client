@@ -40,6 +40,11 @@
               <h4>{{ collection.collection_name }}</h4>
               <p>
                 Ngày tạo: {{ formatDateTime(collection.collection_created_at) }}
+
+              </p>
+              <p class="date-collection">
+                Ngày bắt đầu thu thập: {{ formatDateTime(collection.collection_start) }}
+                | Ngày kết thúc thu thập: {{ formatDateTime(collection.collection_end) }}
               </p>
             </div>
           </div>
@@ -88,309 +93,317 @@
 </template>
 
 <script>
-import { computed, onBeforeMount, ref, reactive, watch } from "vue";
-import { useRouter } from "vue-router";
-import { useRoute } from "vue-router";
-import { useToast } from "vue-toastification";
-import projectService from "../services/project.service";
-import collectionService from "../services/collection.service";
-import formatDate from "../util/formatDate";
-import { useQuasar } from 'quasar'
-export default {
-  setup() {
-    const $q = useQuasar()
-    const route = useRoute();
-    const collectionName = ref();
-    const project = ref();
-    const collections = ref();
-    const { user_id } = JSON.parse(localStorage.getItem("user"));
-    const router = useRouter();
-    const toast = useToast();
-    const openUpdate = ref();
-    const isOwner = ref();
-    const openAdd = ref();
-    const projectId = route.params.id;
+  import { computed, onBeforeMount, ref, reactive, watch } from "vue";
+  import { useRouter } from "vue-router";
+  import { useRoute } from "vue-router";
+  import { useToast } from "vue-toastification";
+  import projectService from "../services/project.service";
+  import collectionService from "../services/collection.service";
+  import formatDate from "../util/formatDate";
+  import { useQuasar } from 'quasar'
+  export default {
+    setup() {
+      const $q = useQuasar()
+      const route = useRoute();
+      const collectionName = ref();
+      const project = ref();
+      const collections = ref();
+      const { user_id } = JSON.parse(localStorage.getItem("user"));
+      const router = useRouter();
+      const toast = useToast();
+      const openUpdate = ref();
+      const isOwner = ref();
+      const openAdd = ref();
+      const projectId = route.params.id;
 
-    const projectUpdate = reactive({
-      project_name: "",
-      project_status: "",
-    });
+      const projectUpdate = reactive({
+        project_name: "",
+        project_status: "",
+      });
 
-    const collectionAdd = reactive({
-      collection_name: "",
-      collection_start: "",
-      collection_end: "",
-      collection_description: "",
-      collection_created_at: "",
-      file: null,
-      project_id: projectId,
-      user_id: user_id,
-    })
+      const collectionAdd = reactive({
+        collection_name: "",
+        collection_start: "",
+        collection_end: "",
+        collection_description: "",
+        collection_created_at: "",
+        file: null,
+        project_id: projectId,
+        user_id: user_id,
+      })
 
-    const projectStatusOptions = ref(["Đang hoạt động", "Dừng hoạt động"]);
+      const projectStatusOptions = ref(["Đang hoạt động", "Dừng hoạt động"]);
 
-    watch(
-      [() => collectionAdd.collection_start, () => collectionAdd.collection_end],
-      ([newStart, newEnd], [oldStart, oldEnd]) => {
-        if (newEnd && newStart && newEnd < newStart) {
-          collectionAdd.collection_end = collectionAdd.collection_start;
+      watch(
+        [() => collectionAdd.collection_start, () => collectionAdd.collection_end],
+        ([newStart, newEnd], [oldStart, oldEnd]) => {
+          if (newEnd && newStart && newEnd < newStart) {
+            collectionAdd.collection_end = collectionAdd.collection_start;
+          }
+        }
+      );
+
+      const handleAddCollection = async () => {
+        $q.loading.show();
+        try {
+          collectionAdd.collection_created_at = new Date();
+          const newCollection = await collectionService.createCollection(collectionAdd);
+          collections.value.push(newCollection);
+          console.log(collections.value);
+          toast.success("Đã thêm đợt thu thập thành công");
+        } catch (error) {
+          console.log(error)
+        } finally {
+          $q.loading.hide();
         }
       }
-    );
 
-    const handleAddCollection = async () => {
-      $q.loading.show();
-      try {
-        collectionAdd.collection_created_at = new Date();
-        const newCollection = await collectionService.createCollection(collectionAdd);
-        collections.value.push(newCollection);
-        console.log(collections.value);
-        toast.success("Đã thêm đợt thu thập thành công");
-      } catch (error) {
-        console.log(error)
-      } finally {
-        $q.loading.hide();
-      }
+      onBeforeMount(async () => {
+        project.value = await projectService.getProjectById(projectId);
+        collections.value = await collectionService.getCollectionByProjectId(
+          projectId
+        );
+        isOwner.value = await projectService.checkIsOwnerProject(user_id, projectId);
 
-    }
-
-    onBeforeMount(async () => {
-      project.value = await projectService.getProjectById(projectId);
-      collections.value = await collectionService.getCollectionByProjectId(
-        projectId
-      );
-      isOwner.value = await projectService.checkIsOwnerProject(user_id, projectId);
-    });
-
-    const goToMember = () => {
-      router.push({ path: `/projects/${projectId}/members` });
-    }
-
-    const filteredCollection = computed(() => {
-      if (!collectionName.value) {
-        return collections.value;
-      }
-
-      return collections.value.filter((collection) =>
-        collection.collection_name
-          .toLowerCase()
-          .includes(collectionName.value.toLowerCase())
-      );
-    });
-
-    const handleGoToCollectionDetail = (collectionId) => {
-      router.push({
-        path: `/projects/${projectId}/collections/${collectionId}`,
       });
-    };
 
-    const handleOpenUpdate = () => {
-      projectUpdate.project_name = project.value.project_name;
-      projectUpdate.project_status = project.value.project_status;
-      openUpdate.value = true;
-    };
-
-    const handleUpdateProject = async () => {
-      try {
-        await projectService.updateProjectById(projectId, projectUpdate);
-        toast.success("Dự án đã cập nhật thông tin thành công");
-      } catch (error) {
-        console.error(error);
-        toast.error("Xảy ra lỗi trong quá trình cập nhật");
+      const goToMember = () => {
+        router.push({ path: `/projects/${projectId}/members` });
       }
-    }
 
-    const formatDateTime = (Date) => {
-      return formatDate(Date);
-    };
+      const filteredCollection = computed(() => {
+        if (!collectionName.value) {
+          return collections.value;
+        }
 
-    return {
-      collections,
-      project,
-      projectId,
-      collectionName,
-      formatDateTime,
-      filteredCollection,
-      handleGoToCollectionDetail,
-      projectUpdate,
-      openUpdate,
-      handleOpenUpdate,
-      projectStatusOptions,
-      handleUpdateProject,
-      isOwner,
-      goToMember,
-      openAdd,
-      collectionAdd,
-      handleAddCollection
-    };
-  },
-};
+        return collections.value.filter((collection) =>
+          collection.collection_name
+            .toLowerCase()
+            .includes(collectionName.value.toLowerCase())
+        );
+      });
+
+      const handleGoToCollectionDetail = (collectionId) => {
+        router.push({
+          path: `/projects/${projectId}/collections/${collectionId}`,
+        });
+      };
+
+      const handleOpenUpdate = () => {
+        projectUpdate.project_name = project.value.project_name;
+        projectUpdate.project_status = project.value.project_status;
+        openUpdate.value = true;
+      };
+
+      const handleUpdateProject = async () => {
+        try {
+          await projectService.updateProjectById(projectId, projectUpdate);
+          toast.success("Dự án đã cập nhật thông tin thành công");
+        } catch (error) {
+          console.error(error);
+          toast.error("Xảy ra lỗi trong quá trình cập nhật");
+        }
+      }
+
+      const formatDateTime = (Date) => {
+        return formatDate(Date);
+      };
+
+      return {
+        collections,
+        project,
+        projectId,
+        collectionName,
+        formatDateTime,
+        filteredCollection,
+        handleGoToCollectionDetail,
+        projectUpdate,
+        openUpdate,
+        handleOpenUpdate,
+        projectStatusOptions,
+        handleUpdateProject,
+        isOwner,
+        goToMember,
+        openAdd,
+        collectionAdd,
+        handleAddCollection
+      };
+    },
+  };
 </script>
 
 <style scoped>
-.wrapper {
-  width: 90%;
-  margin: 0 auto;
-}
+  .wrapper {
+    width: 90%;
+    margin: 0 auto;
+  }
 
-.banner {
-  width: 100%;
-  position: relative;
-}
+  .banner {
+    width: 100%;
+    position: relative;
+  }
 
-img {
-  width: 100%;
-  height: 50%;
-  border-radius: 10px;
-}
+  p {
+    margin: 0;
+  }
 
-.project_name {
-  color: white;
-  position: absolute;
-  bottom: 10%;
-  left: 30px;
-  font-size: 40px;
-  font-weight: bold;
-}
+  img {
+    width: 100%;
+    height: 50%;
+    border-radius: 10px;
+  }
 
-.project_status {
-  top: 10%;
-  position: absolute;
-  left: 30px;
-}
+  .project_name {
+    color: white;
+    position: absolute;
+    bottom: 10%;
+    left: 30px;
+    font-size: 40px;
+    font-weight: bold;
+  }
 
-.active {
-  font-size: 100px;
-  color: rgb(171, 237, 171);
-}
+  .project_status {
+    top: 10%;
+    position: absolute;
+    left: 30px;
+  }
 
-.inactive {
-  font-size: 100px;
-  color: brown;
-}
+  .active {
+    font-size: 100px;
+    color: rgb(171, 237, 171);
+  }
 
-h4 {
-  margin: 0;
-  padding: 0;
-}
+  .inactive {
+    font-size: 100px;
+    color: brown;
+  }
 
-.collection {
-  display: flex;
-  padding: 10px 30px;
-  border: 1px solid #cccc;
-  border-radius: 10px;
-  margin: 10px 0;
-  height: 90px;
-  justify-items: center !important;
-}
+  h4 {
+    margin: 0;
+    padding: 0;
+  }
 
-.collection:hover {
-  background-color: rgb(3, 8, 148);
-  cursor: pointer;
-}
+  .collection {
+    display: flex;
+    padding: 10px 30px;
+    border: 1px solid #cccc;
+    border-radius: 10px;
+    margin: 10px 0;
+    height: 90px;
+    justify-items: center !important;
+  }
 
-.collection-icon {
-  font-size: 40px;
-  color: white;
-}
+  .collection:hover {
+    background-color: rgb(3, 8, 148);
+    cursor: pointer;
+  }
 
-.collection:hover .collection-info {
-  color: white;
-}
+  .collection-icon {
+    font-size: 40px;
+    color: white;
+  }
 
-.icon-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 45px;
-  height: 45px;
-  background-color: rgb(3, 8, 148);
-  border-radius: 100px;
-  margin: 10px 10px 10px 0;
-}
+  .collection:hover .collection-info {
+    color: white;
+  }
 
-.collection-info {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  .icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    background-color: rgb(3, 8, 148);
+    border-radius: 100px;
+    margin: 10px 10px 10px 0;
+  }
 
-.icon-wrapper {
-  height: 100%;
-  display: flex;
-  justify-items: center;
-}
+  .collection-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-.setting-icon {
-  position: absolute;
-  right: 40px;
-  top: 10px;
-  font-size: 40px;
-  color: white;
-  cursor: pointer;
-}
+  .icon-wrapper {
+    height: 100%;
+    display: flex;
+    justify-items: center;
+  }
 
-.setting-icon:hover {
-  color: rgb(10, 10, 137);
-}
+  .setting-icon {
+    position: absolute;
+    right: 40px;
+    top: 10px;
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+  }
 
-.card-update {
-  max-width: 1000px;
-  width: 800px;
-}
+  .setting-icon:hover {
+    color: rgb(10, 10, 137);
+  }
 
-.input {
-  font-size: 20px;
-  margin: 10px 0;
-}
+  .card-update {
+    max-width: 1000px;
+    width: 800px;
+  }
 
-h3 {
-  font-size: 32px;
-  text-align: center;
-}
+  .input {
+    font-size: 20px;
+    margin: 10px 0;
+  }
 
-.submit-update {
-  display: flex;
-  margin: 0 auto;
-  font-size: 20px;
-  padding: 0 50px;
-  margin-top: 20px;
-}
+  h3 {
+    font-size: 32px;
+    text-align: center;
+  }
 
-.status_text {
-  margin: 0 !important;
-  padding: 0 !important;
-  font-size: 20px;
-}
+  .submit-update {
+    display: flex;
+    margin: 0 auto;
+    font-size: 20px;
+    padding: 0 50px;
+    margin-top: 20px;
+  }
 
-.groups {
-  right: 100px;
-}
+  .status_text {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 20px;
+  }
 
-.input-search {
-  display: flex;
-  justify-content: space-between;
-}
+  .groups {
+    right: 100px;
+  }
 
-.search-name {
-  width: 75%;
-  max-width: 100%;
-}
+  .input-search {
+    display: flex;
+    justify-content: space-between;
+  }
 
-.search-name-member {
-  width: 100% !important;
-}
+  .search-name {
+    width: 75%;
+    max-width: 100%;
+  }
 
-.btn-add {
-  width: 20%;
-}
+  .search-name-member {
+    width: 100% !important;
+  }
 
-.date-add {
-  display: flex;
-  justify-content: space-between;
-}
+  .btn-add {
+    width: 20%;
+  }
 
-.date {
-  width: 45%;
-}
+  .date-add {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .date {
+    width: 45%;
+  }
+
+  .date-collection {
+    font-weight: bold;
+  }
 </style>
