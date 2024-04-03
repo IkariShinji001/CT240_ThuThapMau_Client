@@ -93,6 +93,13 @@ const router = createRouter({
       component: () => import("../views/Signup.vue"),
     },
     {
+      path: "/user/:id",
+      meta: {
+        title: "Thông tin người dùng",
+      },
+      component: () => import("../views/User.vue"),
+    },
+    {
       path: "/users",
       meta: {
         title: "Đăng ký tài khoản",
