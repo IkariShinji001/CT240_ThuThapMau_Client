@@ -52,6 +52,7 @@ export default {
       user_name: "",
       user_email: "",
       user_phone_number: "",
+      user_image_url: "",
     })
 
     onBeforeMount(async () => {
@@ -61,6 +62,7 @@ export default {
         user.user_name = res.user_full_name;
         user.user_email = res.user_email;
         user.user_phone_number = res.user_phone_number;
+        user.user_image_url = res.user_image_url;
       } catch (e) {}
     });
 
@@ -84,6 +86,7 @@ export default {
           user_full_name: user.user_name,
           user_email: user.user_email,
           user_phone_number: user.user_phone_number,
+          user_image_url: user.user_image_url,          
         });
         toast.success("Cập nhật thành công")
       } catch (e) {}

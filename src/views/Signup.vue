@@ -66,7 +66,6 @@
                   <q-icon name="password" />
                 </template>
               </q-input>
-
             </div>
             <div class="button">
               <q-btn class="btn" @click="handleSignup">Đăng Ký</q-btn>
@@ -79,13 +78,8 @@
                 <router-link class="login-pw" to="/login"
                   >Đã có tài khoản</router-link>
               </section>
-            
-              
           </div>
         </section>
-        <div class="image-container">
-          <img src="../assets/THANH DUY BUFFET.png" />
-        </div>
       </div>
     </q-page>
   </template>
@@ -116,8 +110,9 @@
         else if (user.user_password !== user.repasswd) {
           toast.error("Mật khẩu nhập lại không đúng");
         }
-        await userService.login(user); // login => signup
-        router.push({path: '/'})
+  
+        await userService.signup(user); // login => signup
+        router.push({path: '/login'})
         toast.success("Đăng ký thành công");
       } catch (error) {
         toast.error("Sai thông tin hoặc mật khẩu");
@@ -164,12 +159,6 @@
     padding: 0 30px;
   }
   
-  img {
-    margin-top: 10px;
-    width: 60%;
-    height: 50%;
-  }
-  
   form-box,h3{
     font-size: 2em;
     color: #162938;
@@ -206,7 +195,7 @@
   
   .container {
     /* background-color: rgba(148, 196, 158, 0.675); */
-    background-image: url('../assets/background_login.jpg') !important;
+    background-image: url('../assets/img0.jpg') !important;
     min-height: 100vh;
     display: grid;
     grid-template-areas: "title title"

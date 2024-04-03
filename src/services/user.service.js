@@ -2,16 +2,18 @@ import api from "./api.service";
 class UserService {
   constructor() {
     this.path = "/public";
-    this.userPath = "/api/v1/users"
     this.userPath = "/api/v1/users";
-
   }
 
   async login(user) {
     const data = (await api.post(`${this.path}/login`, user)).data;
     return data;
   }
-
+  async signup(user) {
+    console.log(user);
+    return (await api.post(`${this.userPath}`,user)).data;
+  }
+ 
   async verifyUser() {
     try {
       await api.get(`${this.path}/verify-access-token`);
