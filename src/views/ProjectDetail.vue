@@ -109,7 +109,7 @@ export default {
     const openUpdate = ref();
     const isOwner = ref();
     const openAdd = ref();
-    const projectId = route.params.id;
+    const projectId = ref(route.params.id);
 
     const projectUpdate = reactive({
       project_name: "",
@@ -123,7 +123,7 @@ export default {
       collection_description: "",
       collection_created_at: "",
       file: null,
-      project_id: projectId,
+      project_id: projectId.value,
       user_id: user_id,
     })
 
@@ -138,6 +138,14 @@ export default {
         }
       }
     );
+
+    watch(projectId, async (old, newValue) => {
+  project.value = await projectService.getProjectById(newValue);
+  collections.value = await collectionService.getCollectionByProjectId(
+    newValue
+  );
+  isOwner.value = await projectService.checkIsOwnerProject(user_id, newValue);
+})
 
    
     const handleAddCollection = async () => {
@@ -157,15 +165,15 @@ export default {
     }
 
     onBeforeMount(async () => {
-      project.value = await projectService.getProjectById(projectId);
+      project.value = await projectService.getProjectById(projectId.value);
       collections.value = await collectionService.getCollectionByProjectId(
-        projectId
+        projectId.value
       );
-      isOwner.value = await projectService.checkIsOwnerProject(user_id, projectId);
+      isOwner.value = await projectService.checkIsOwnerProject(user_id, projectId.value);
     });
 
     const goToMember = () => {
-      router.push({ path: `/projects/${projectId}/members` });
+      router.push({ path: `/projects/${projectId.value}/members` });
     }
 
     const filteredCollection = computed(() => {
@@ -180,12 +188,18 @@ export default {
       );
     });
 
+    // const handleGoToCollectionDetail = (collectionId) => {
+    //   router.push({
+    //     path: `/projects/${projectId}/collections/${collectionId}`,
+    //   });
+    // };
+// NEW ----------
     const handleGoToCollectionDetail = (collectionId) => {
       router.push({
-        path: `/projects/${projectId}/collections/${collectionId}`,
+        path: `/collections/${collectionId}`,
       });
     };
-
+// NEW ----------
     const handleOpenUpdate = () => {
       projectUpdate.project_name = project.value.project_name;
       projectUpdate.project_status = project.value.project_status;
@@ -194,7 +208,7 @@ export default {
 
     const handleUpdateProject = async () => {
       try {
-        await projectService.updateProjectById(projectId, projectUpdate);
+        await projectService.updateProjectById(projectId.value, projectUpdate);
         toast.success("Dự án đã cập nhật thông tin thành công");
       } catch (error) {
         console.error(error);

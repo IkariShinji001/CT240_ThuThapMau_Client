@@ -43,6 +43,14 @@ const router = createRouter({
             title: 'Dự án'
           },
           component: () => import("../views/Notifications.vue")
+        },
+        {
+          path: '/collection-forms/:id',
+          name: 'Form',
+          meta:{
+            title: 'Form đã điền'
+          },
+          component: () => import("../views/FormDetail.vue")
         }
       ],
       component: () => import("../layouts/DashBoard.vue"),
@@ -80,15 +88,6 @@ const router = createRouter({
         title: "Đăng ký tài khoản",
       },
       component: () => import("../views/Signup.vue"),
-    },
-
-    // THem moisw?/
-    {
-      path: "/users",
-      meta: {
-        title: "Đăng ký tài khoản",
-      },
-      component: () => import("../layouts/test.vue")
     },
     {
       path: "/user/:id",

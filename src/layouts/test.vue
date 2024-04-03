@@ -14,23 +14,14 @@ export default {
       {
         collection_attribute_id: 1,
         collection_value: "hukhan",
-        submit_time: 1,
-        collection_form_id: 1,
-        user_id: 1,
       },
       {
         collection_attribute_id: 2,
         collection_value: "Bac Lieu",
-        submit_time: 1,
-        collection_form_id: 1,
-        user_id: 1,
       },
       {
         collection_attribute_id: 3,
         collection_value: "Hmm",
-        submit_time: 1,
-        collection_form_id: 1,
-        user_id: 1,
       },
     ]);
 
@@ -38,7 +29,7 @@ export default {
       e.preventDefault();
       try {
         const fd = new FormData();
-        
+
         fd.append("valueDtos", JSON.stringify(valueDtos.value));
 
         for (let i = 0; i < file.value.length; i++) {
