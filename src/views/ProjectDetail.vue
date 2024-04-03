@@ -94,7 +94,7 @@
 
 <script>
   import { computed, onBeforeMount, ref, reactive, watch } from "vue";
-  import { useRouter } from "vue-router";
+  import { useRouter, onBeforeRouteUpdate } from "vue-router";
   import { useRoute } from "vue-router";
   import { useToast } from "vue-toastification";
   import projectService from "../services/project.service";
@@ -114,7 +114,7 @@
       const openUpdate = ref();
       const isOwner = ref();
       const openAdd = ref();
-      const projectId = route.params.id;
+      const projectId = ref(route.params.id);
 
       const projectUpdate = reactive({
         project_name: "",
@@ -128,9 +128,10 @@
         collection_description: "",
         collection_created_at: "",
         file: null,
-        project_id: projectId,
+        project_id: projectId.value,
         user_id: user_id,
       })
+
 
 
       const projectStatusOptions = ref(["Đang hoạt động", "Dừng hoạt động"]);
@@ -143,6 +144,15 @@
           }
         }
       );
+
+      onBeforeRouteUpdate(async (to, from) => {
+        projectId.value = to.params.id;
+        project.value = await projectService.getProjectById(projectId.value);
+        collections.value = await collectionService.getCollectionByProjectId(
+          projectId.value
+        );
+        isOwner.value = await projectService.checkIsOwnerProject(user_id, projectId.value);
+      })
 
       const handleAddCollection = async () => {
         $q.loading.show();
@@ -160,16 +170,16 @@
       }
 
       onBeforeMount(async () => {
-        project.value = await projectService.getProjectById(projectId);
+        project.value = await projectService.getProjectById(projectId.value);
         collections.value = await collectionService.getCollectionByProjectId(
-          projectId
+          projectId.value
         );
-        isOwner.value = await projectService.checkIsOwnerProject(user_id, projectId);
+        isOwner.value = await projectService.checkIsOwnerProject(user_id, projectId.value);
 
       });
 
       const goToMember = () => {
-        router.push({ path: `/projects/${projectId}/members` });
+        router.push({ path: `/projects/${projectId.value}/members` });
       }
 
       const filteredCollection = computed(() => {
@@ -186,7 +196,7 @@
 
       const handleGoToCollectionDetail = (collectionId) => {
         router.push({
-          path: `/projects/${projectId}/collections/${collectionId}`,
+          path: `/projects/${projectId.value}/collections/${collectionId}`,
         });
       };
 
@@ -198,7 +208,7 @@
 
       const handleUpdateProject = async () => {
         try {
-          await projectService.updateProjectById(projectId, projectUpdate);
+          await projectService.updateProjectById(projectId.value, projectUpdate);
           toast.success("Dự án đã cập nhật thông tin thành công");
         } catch (error) {
           console.error(error);
