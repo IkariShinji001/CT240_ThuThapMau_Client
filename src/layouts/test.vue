@@ -1,30 +1,60 @@
-<template></template>
+<template>
+  <q-file v-model="file" multiple />
+  <button @click="createProject">CLICK</button>
+</template>
 
 <script>
 import testValue from "../services/testCreateForm.service";
+import { ref } from "vue";
+
 export default {
   setup() {
-    const userId = ref(20);
-    const formId = ref(1);
-    const values = ref([{ hoten: "hukhan" }, { age: 18 }, { thuthap: "asfa" }]);
-    const files = []
+    const file = ref();
+    const valueDtos = ref([
+      {
+        collection_attribute_id: 1,
+        collection_value: "hukhan",
+        submit_time: 1,
+        collection_form_id: 1,
+        user_id: 1,
+      },
+      {
+        collection_attribute_id: 2,
+        collection_value: "Bac Lieu",
+        submit_time: 1,
+        collection_form_id: 1,
+        user_id: 1,
+      },
+      {
+        collection_attribute_id: 3,
+        collection_value: "Hmm",
+        submit_time: 1,
+        collection_form_id: 1,
+        user_id: 1,
+      },
+    ]);
+
     async function createProject(e) {
       e.preventDefault();
       try {
         const fd = new FormData();
-        fd.append("collection_form_id", formId);
-        fd.append("file", fileUploaded.value);
-        fd.append("user_id", userId);
-        fd.append("values", values);
-        fd.append("files", files)
-        const createdProject = await projectService.createProject(fd);
+        
+        fd.append("valueDtos", JSON.stringify(valueDtos.value));
 
-       
-        emit("getNewProject", createdProject);
+        for (let i = 0; i < file.value.length; i++) {
+          fd.append("files", file.value[i]);
+        }
+
+        const createdProject = await testValue.createValue(fd);
       } catch (e) {
         console.log(e);
       }
     }
+
+    return {
+      createProject,
+      file,
+    };
   },
 };
 </script>

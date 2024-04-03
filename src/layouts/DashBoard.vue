@@ -78,25 +78,27 @@
         >
           <q-list class="side-bar-list-container">
             <div v-for="pro in project" :key="pro.project_id">
-              <div class="side-bar-item">
-                <div class="project-item">
-                  <q-icon name="task" size="34px" color="yellow">
-                    <q-tooltip
-                      max-width="200px"
-                      style="
-                        background-color: gray;
-                        color: white;
-                        font-size: 13px;
-                      "
-                    >
+              <router-link :to="'/projects/' + pro.project_id">
+                <div class="side-bar-item">
+                  <div class="project-item">
+                    <q-icon name="task" size="34px" color="yellow">
+                      <q-tooltip
+                        max-width="200px"
+                        style="
+                          background-color: gray;
+                          color: white;
+                          font-size: 13px;
+                        "
+                      >
+                        {{ pro.project_name }}
+                      </q-tooltip>
+                    </q-icon>
+                    <span class="project-item-name">
                       {{ pro.project_name }}
-                    </q-tooltip>
-                  </q-icon>
-                  <span class="project-item-name">
-                    {{ pro.project_name }}
-                  </span>
+                    </span>
+                  </div>
                 </div>
-              </div>
+              </router-link>
             </div>
           </q-list>
         </q-scroll-area>

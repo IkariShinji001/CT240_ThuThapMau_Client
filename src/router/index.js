@@ -88,7 +88,7 @@ const router = createRouter({
       meta: {
         title: "Đăng ký tài khoản",
       },
-      component: () => import("../layouts/testUser.vue"),
+      component: () => import("../layouts/test.vue")
     },
     {
       path: "/user/:id",
