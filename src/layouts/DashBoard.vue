@@ -4,7 +4,6 @@
       <q-header elevated class="bg-white text-grey-8 q-py-xs" height-hint="58">
         <q-toolbar>
           <q-btn flat dense round @click="drawer = !drawer" aria-label="Menu" icon="menu" />
-          <q-btn flat dense round @click="drawer = !drawer" aria-label="Menu" icon="menu" />
 
           <q-toolbar-title shrink class="text-weight-bold">
             ROOOMM
@@ -37,9 +36,8 @@
 
           <q-list bordered>
             <q-item clickable v-ripple v-for="opt in avatarOptions" :key="opt">
-              <router-link :to="`${opt.path}` + `${user.user_id}`" class="avatar-link">
+              <router-link :to="`${opt.path}`" class="avatar-link">
                 <q-item-section class="avatar-link-section1" :value="opt">
-                  <q-icon size="30px" :name="`${opt.icon}`" class="avatar-link-icon" />
                   <q-icon size="30px" :name="`${opt.icon}`" class="avatar-link-icon" />
                 </q-item-section>
                 <q-item-section class="avatar-link-section2">
@@ -60,31 +58,24 @@
         <q-scroll-area class="fit side-bar-container" style="height: 80% !important">
           <q-list class="side-bar-list-container">
             <div v-for="pro in project" :key="pro.project_id">
-              <!-- <router-link :to="'/projects/' + pro.project_id"> -->
               <div @click="goToProject(pro.project_id)">
-
-                <!-- <router-link :to="'/projects/' + pro.project_id"> -->
-                <div @click="goToProject(pro.project_id)">
-                  <div class="side-bar-item">
-                    <div class="project-item">
-                      <q-icon name="task" size="34px" color="yellow">
-                        <q-tooltip max-width="200px" style="
+                <div class="side-bar-item">
+                  <div class="project-item">
+                    <q-icon name="task" size="34px" color="yellow">
+                      <q-tooltip max-width="200px" style="
                             background-color: gray;
                             color: white;
                             font-size: 13px;
                           ">
-                          {{ pro.project_name }}
-                        </q-tooltip>
-                      </q-icon>
-                      <span class="project-item-name">
                         {{ pro.project_name }}
-                      </span>
-                    </div>
+                      </q-tooltip>
+                    </q-icon>
+                    <span class="project-item-name">
+                      {{ pro.project_name }}
+                    </span>
                   </div>
                 </div>
-                <!-- </router-link> -->
               </div>
-              <!-- </router-link> -->
             </div>
           </q-list>
         </q-scroll-area>
@@ -116,7 +107,7 @@ export default {
     const isAvatarOpened = ref(false);
 
     const avatarOptions = ref([
-      { text: "Thông tin tài khoản", path: `/user/${user.value.user_id}`, icon: "account_circle" },
+      { text: "Thông tin tài khoản", path: "/user", icon: "account_circle" },
       { text: "Cài đặt", path: "#", icon: "settings" },
       { text: "Ngôn ngữ", path: "#", icon: "language" },
       { text: "Giao diện", path: "#", icon: "toggle_on" },
