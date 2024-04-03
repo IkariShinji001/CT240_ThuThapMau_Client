@@ -43,6 +43,13 @@ const router = createRouter({
             title: 'Dự án'
           },
           component: () => import("../views/Notifications.vue")
+        },
+        {
+          path: "/user/:id",
+          meta: {
+            title: "Thông tin người dùng",
+          },
+          component: () => import("../views/User.vue"),
         }
       ],
       component: () => import("../layouts/DashBoard.vue"),
@@ -90,13 +97,7 @@ const router = createRouter({
       },
       component: () => import("../layouts/testUser.vue"),
     },
-    {
-      path: "/user/:id",
-      meta: {
-        title: "Thông tin người dùng",
-      },
-      component: () => import("../views/User.vue"),
-    },
+   
     {
       path: "/collection/:collection_id/user/:user_id",
       name: "Tạo from",
