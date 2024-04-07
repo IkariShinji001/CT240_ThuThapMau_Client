@@ -10,7 +10,6 @@ class UserService {
     return data;
   }
   async signup(user) {
-    console.log(user);
     return (await api.post(`${this.userPath}`, user)).data;
   }
 
@@ -45,7 +44,6 @@ class UserService {
   }
 
   async updateUserImage(user_id, image) {
-    console.log(user_id, image);
     const formData = new FormData();
     formData.append("file", image);
     return await api.patch(`${this.userPath}/${user_id}/image`, formData, {

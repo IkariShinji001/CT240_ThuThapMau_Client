@@ -14,8 +14,8 @@
           <div class="q-gutter-sm row items-center no-wrap">
             <router-link to="/notifications">
               <q-btn round dense flat color="grey-8" icon="notifications">
-                <q-badge color="red" text-color="white" floating> 2 </q-badge>
-                <q-tooltip>Notifications</q-tooltip>
+                <!-- <q-badge color="red" text-color="white" floating> 2 </q-badge> -->
+                <q-tooltip>Thông báo</q-tooltip>
               </q-btn>
             </router-link>
             <q-btn round flat @click="openAvatar" class="avatar-btn">
