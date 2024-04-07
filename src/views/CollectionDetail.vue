@@ -20,7 +20,7 @@
             <p class="date">Ngày kết thúc: {{ formatDateTime(collection.collection_end) }}</p>
           </div>
           <div>
-            <q-icon class="icon-update" name="settings" @click="openUpdateCollection"></q-icon>
+            <q-icon class="icon-update" v-if="isOwner" name="settings" @click="openUpdateCollection"></q-icon>
           </div>
           <div class="btn-add-form">
             <q-btn color="primary" class="btn-open-add" v-if="isOwner" @click="openCreateForm = true">Tạo Form cho đợt
@@ -60,7 +60,7 @@
               <q-input outlined label="Ngày kết thúc đợt thu thập" class="input date"
                 v-model="collectionUpdate.collection_end" type="date"></q-input>
             </div>
-            <q-btn color="primary" class="submit-update" @click="handleAddCollection">Cập nhật</q-btn>
+            <q-btn color="primary" class="submit-update" @click="handleUpdateCollection">Cập nhật</q-btn>
           </q-card-section>
         </q-card>
       </q-dialog>
@@ -78,11 +78,16 @@
   import collectionFormService from '../services/collectionForm.service'
   import CreateForm from './CreateForm.vue';
   import router from '../router';
+  import { useQuasar } from 'quasar';
+  import { useToast } from "vue-toastification"
+
   export default {
     components: {
       "CreateForm": CreateForm
     },
     setup() {
+      const toast = useToast();
+      const $q = useQuasar();
       const route = useRoute();
       const project_id = route.params.project_id;
       const collection_id = route.params.collection_id;
@@ -152,6 +157,25 @@
         collectionUpdate.collection_description = collection.value.collection_description;
         openUpdate.value = true;
       }
+
+
+      const handleUpdateCollection = async () => {
+        $q.loading.show();
+        try {
+          const updatedCollection = await collectionService.updateCollection(collection_id, collectionUpdate);
+          collection.value.collection_name = updatedCollection.collection_name;
+          collection.value.collection_start = formatDateTime(updatedCollection.collection_start);
+          collection.value.collection_end = formatDateTime(updatedCollection.collection_end);
+          collection.value.collection_description = updatedCollection.collection_description;
+          openUpdate.value = false;
+          toast.success("Cập nhật thông tin thành công");
+        } catch (error) {
+          toast.success("Xảy ra lỗi rồi");
+          console.log(error);
+        } finally {
+          $q.loading.hide();
+        }
+      }
       return {
         collection,
         project,
@@ -167,7 +191,8 @@
         gotoDetail,
         openUpdate,
         collectionUpdate,
-        openUpdateCollection
+        openUpdateCollection,
+        handleUpdateCollection
       }
     }
   }
