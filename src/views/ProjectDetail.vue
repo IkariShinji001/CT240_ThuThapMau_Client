@@ -161,6 +161,7 @@
           const newCollection = await collectionService.createCollection(collectionAdd);
           collections.value.push(newCollection);
           console.log(collections.value);
+          openAdd.value = false;
           toast.success("Đã thêm đợt thu thập thành công");
         } catch (error) {
           console.log(error)
@@ -209,6 +210,9 @@
       const handleUpdateProject = async () => {
         try {
           await projectService.updateProjectById(projectId.value, projectUpdate);
+          project.value.project_name = projectUpdate.project_name;
+          project.value.project_status = projectUpdate.project_status;
+          openUpdate.value = false;
           toast.success("Dự án đã cập nhật thông tin thành công");
         } catch (error) {
           console.error(error);
