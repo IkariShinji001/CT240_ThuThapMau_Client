@@ -29,7 +29,8 @@
 
         <div class="collection-container">
           <q-input v-model="searchName" outlined label="Tìm theo tên của form" class="input"></q-input>
-          <div v-for="collectionForm in filterCollection" class="collectionForm">
+          <div v-for="collectionForm in filterCollection" class="collectionForm"
+            @click="gotoDetail(collectionForm.collection_form_id)">
             <div class="form_name">{{ collectionForm.collection_form_name }}</div>
           </div>
         </div>
@@ -54,6 +55,7 @@
   import projectService from '../services/project.service';
   import collectionFormService from '../services/collectionForm.service'
   import CreateForm from './CreateForm.vue';
+  import router from '../router';
   export default {
     components: {
       "CreateForm": CreateForm
@@ -91,6 +93,10 @@
         return formatDate(date);
       }
 
+      const gotoDetail = (id) => {
+        router.push({ path: `/projects/${project_id}/collections/${collection_id}/collection-forms/${id}` })
+      }
+
       const getNewCollection = (collection) => {
         collectionForms.value.push(collection);
       }
@@ -106,7 +112,8 @@
         filterCollection,
         searchName,
         isOwner,
-        getNewCollection
+        getNewCollection,
+        gotoDetail
       }
     }
   }
