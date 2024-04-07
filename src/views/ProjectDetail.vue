@@ -2,7 +2,7 @@
   <q-page>
     <div class="wrapper" v-if="project">
       <div class="banner">
-        <img src="https://gstatic.com/classroom/themes/img_learnlanguage.jpg" />
+        <img :src="project.project_image_url" />
         <p class="project_name">{{ project.project_name }}
           <br>
         <p class="status_text">Trạng thái: {{ project.project_status }}</p>
