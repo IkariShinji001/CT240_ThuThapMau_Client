@@ -1,15 +1,12 @@
 import api from "./api.service";
 class AttributeService {
   constructor() {
-    this.path = "/api/v1/collections";
+    this.path = "/api/v1/collection-attributes";
   }
 
-  async getCollectionByProjectId(projectId) {
-    return (await api.get(`${this.path}/projects/${projectId}`)).data;
+  async getAttributesByCollectionFormId(collectionFormId){
+    return (await api.get(`${this.path}/${collectionFormId}`)).data
   }
-
-
-  
 }
 
 export default new AttributeService();

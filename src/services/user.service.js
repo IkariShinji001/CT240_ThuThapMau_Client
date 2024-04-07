@@ -11,9 +11,9 @@ class UserService {
   }
   async signup(user) {
     console.log(user);
-    return (await api.post(`${this.userPath}`,user)).data;
+    return (await api.post(`${this.userPath}`, user)).data;
   }
- 
+
   async verifyUser() {
     try {
       await api.get(`${this.path}/verify-access-token`);
@@ -25,7 +25,11 @@ class UserService {
   }
 
   async forgetPassword(email) {
-    await api.post(`${this.path}/forget-password`, {email});
+    await api.post(`${this.path}/forget-password`, { email });
+  }
+
+  async sendmail(user_email){
+    await api.post(`${this.userPath}/sendEmail/forget-password`, user_email);  
   }
 
   async sendmail(user_email){
@@ -37,18 +41,26 @@ class UserService {
     await api.patch(`${this.userPath}/reset-password`, {user_id}, password);
   }
 
-  async getUserId(id){
+  async getUserId(id) {
     return (await api.get(`${this.userPath}/${id}`)).data;
   }
 
-  async update(id, user_password){
-    return (await api.patch(`${this.userPath}/${id}`, user_password)).data;
+  async update(id, data){
+    return (await api.patch(`${this.userPath}/${id}`, data)).data;
   }
 
   async getUserByEmail(email) {
     return (await api.get(`${this.userPath}/emails/${email}`)).data;
   }
 
+  async updateUserImage(user_id, image) {
+    console.log(user_id, image);
+    const formData = new FormData();
+    formData.append("file", image);
+    return await api.patch(`${this.userPath}/${user_id}/image`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }).data;
+  }
 }
 
 export default new UserService();

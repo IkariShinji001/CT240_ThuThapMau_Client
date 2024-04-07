@@ -45,7 +45,7 @@ const router = createRouter({
           component: () => import("../views/Notifications.vue"),
         },
         {
-          path: "/user/:id",
+          path: "/user",
           meta: {
             title: "Thông tin người dùng",
           },
@@ -53,11 +53,19 @@ const router = createRouter({
         },
         {
           path: "/projects/:project_id/collections/:collection_id",
-          name: "Chi tiết đợt thu thập",
+          name: "Chi tiết đợt thu thập s",
           meta: {
             title: "Chi tiết đợt thu thập",
           },
           component: () => import("../views/CollectionDetail.vue"),
+        },
+        {
+          path: "/projects/:project_id/collections/:collection_id/collection-forms/:id",
+          name: "Chi tiết đợt thu thập",
+          meta: {
+            title: "Chi tiết đợt thu thập",
+          },
+          component: () => import("../views/FormDetail.vue"),
         },
       ],
       component: () => import("../layouts/DashBoard.vue"),
@@ -91,24 +99,6 @@ const router = createRouter({
         title: "Đăng ký tài khoản",
       },
       component: () => import("../views/Signup.vue"),
-    },
-
-    // THem moisw?/
-    {
-      path: "/users",
-      meta: {
-        title: "Đăng ký tài khoản",
-      },
-      component: () => import("../layouts/test.vue"),
-    },
-
-    {
-      path: "/collection/:collection_id/user/:user_id",
-      name: "Tạo from",
-      meta: {
-        title: "Tạo form",
-      },
-      component: () => import("../views/CreateForm.vue"),
     },
     // {
     //   path: '/:pathMatch(.*)*',

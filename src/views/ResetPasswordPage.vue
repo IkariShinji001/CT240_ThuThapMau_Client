@@ -66,7 +66,6 @@ export default {
         toast.warning("Mật khẩu không trùng khớp");
         return;
       }
-      console.log(route.query.user_id, user.user_password);
       try {
         await userService.resetPassword(route.query.user_id, user.user_password);
         toast.success("Bạn đã đổi mật khẩu thành công");
