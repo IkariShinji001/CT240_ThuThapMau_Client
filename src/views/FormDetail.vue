@@ -1,48 +1,48 @@
 <template>
   <q-page class="container-parent">
-    <div class="container">
-      <div v-if="collectionForm" class="form-info">
-        <p class="form-title">{{ collectionForm.collection_form_name }}</p>
-      </div>
+    <div class="container" v-if="collectionForm">
+      <div class="header">
+        <p class="form-title"><q-icon name="assignment"></q-icon>{{ collectionForm.collection_form_name }} Lorem ipsum dolor sit, amet consectetur
+          adipisicing elit. Voluptas voluptate omnis et cum autem vel velit, maiores temporibus quidem ut.</p>
 
-      <div class="submit-form">
-        <q-btn flat round class="q-btn-open" style="bottom: 2px; right: 5px" @click="openFormFunc">
-          <q-icon name="add" class="plus-icon"></q-icon>
-          <q-tooltip style="font-size: 14px; font-weight: 700">
-            create project
-          </q-tooltip>
-        </q-btn>
+        <div>
+          <q-btn flat round class="q-btn-class" style="bottom: 2px; right: 5px" @click="createProject">
+            <q-icon name="add" class="plus-icon" size="40px"></q-icon>
+            <q-tooltip style="font-size: 14px; font-weight: 700">
+              create project
+            </q-tooltip>
+          </q-btn>
+        </div>
       </div>
+      <q-separator size="5px" />
+    </div>
 
-      <q-dialog v-model="openAdd">
-        <q-card class="card-add">
-          <h3>{{ collectionForm.collection_form_name }}</h3>
-          <div v-for="(attr, idx) in listAttributes" :key="idx" class="field-card">
-            <!-- <q-file v-if="attr.collection_attribute_name == 'Ảnh'" :label="attr.collection_attribute_name"
+    <q-dialog v-model="openAdd">
+      <q-card class="card-add">
+        <h3>{{ collectionForm.collection_form_name }}</h3>
+        <div v-for="(attr, idx) in listAttributes" :key="idx" class="field-card">
+          <!-- <q-file v-if="attr.collection_attribute_name == 'Ảnh'" :label="attr.collection_attribute_name"
               v-model="file" multiple /> -->
 
-            <q-file filled bottom-slots accept="image/*"  counter v-if="attr.collection_attribute_name == 'Ảnh'" :label="attr.collection_attribute_name"
-              v-model="file" multiple >
-              <template v-slot:prepend>
-                <q-icon name="cloud_upload" @click.stop.prevent />
-              </template>
-              <template v-slot:append>
-                <q-icon name="close" @click.stop.prevent="model = null" class="cursor-pointer" />
-              </template>
+          <q-file filled bottom-slots accept="image/*" counter v-if="attr.collection_attribute_name == 'Ảnh'"
+            :label="attr.collection_attribute_name" v-model="file" multiple>
+            <template v-slot:prepend>
+              <q-icon name="cloud_upload" @click.stop.prevent />
+            </template>
+            <template v-slot:append>
+              <q-icon name="close" @click.stop.prevent="model = null" class="cursor-pointer" />
+            </template>
 
-              <template v-slot:hint>
-                Field hint
-              </template>
-            </q-file>
+            <template v-slot:hint> Field hint </template>
+          </q-file>
 
-            <q-input v-else dense outlined :label="attr.collection_attribute_name" class="q-input-class"
-              v-model="inputValues[idx].collection_value"></q-input>
-          </div>
+          <q-input v-else dense outlined :label="attr.collection_attribute_name" class="q-input-class"
+            v-model="inputValues[idx].collection_value"></q-input>
+        </div>
 
-          <q-btn class="q-btn-submit" @click="submitHandler"> Nộp </q-btn>
-        </q-card>
-      </q-dialog>
-    </div>
+        <q-btn class="q-btn-submit" @click="submitHandler"> Nộp </q-btn>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -84,6 +84,7 @@ export default {
       }));
       userId.value = collectionForm.value.user.user_id;
 
+      console.log(collectionForm.value.collection);
     });
 
     async function submitHandler() {
@@ -102,7 +103,11 @@ export default {
         fd.append("userId", userId.value);
         fd.append("collectionFormId", collectionFormId);
         fd.append("valueDtos", JSON.stringify(listAttributeValue.value));
-        fd.append("lastIdx", listAttributes.value[listAttributes.value.length - 1].collection_attribute_id)
+        fd.append(
+          "lastIdx",
+          listAttributes.value[listAttributes.value.length - 1]
+            .collection_attribute_id
+        );
         for (let i = 0; i < file.value.length; i++) {
           fd.append("files", file.value[i]);
         }
@@ -134,28 +139,39 @@ export default {
 
 <style scoped>
 .container-parent {
+  max-width: 100%;
   border: 1px solid blue;
-  display: flex;
-  justify-content: center;
+  /* display: flex;
+  justify-content: center; */
 }
 
-.container {
-  border: 1px solid blue;
+.header {
+  margin: auto;
+  margin-top: 15px;
+  margin-bottom: 30px;
   width: 90%;
   display: flex;
-  margin-top: 20px;
-  justify-content: start;
+  justify-content: space-between;
 }
 
-.form-info {
-  flex: 3;
-  border: 1px solid red;
+.form-title {
+  max-width: 600px;
+  font-size: 32px;
+  width: 80%;
+  border: 1px solid rgb(90, 90, 90);
+  margin: 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.submit-form {
-  flex: 1;
-  width: 100px;
-  border: 1px solid red;
+.form-info-icon {
+  border-radius: 50%;
+  border: 1px solid rgb(90, 90, 90);
+  background: rgb(90, 90, 90);
+  color: white;
+  padding: 4px;
+  margin-right: 10px;
 }
 
 .form-title {

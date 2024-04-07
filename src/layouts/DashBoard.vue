@@ -5,15 +5,19 @@
         <q-toolbar>
           <q-btn flat dense round @click="drawer = !drawer" aria-label="Menu" icon="menu" />
 
-          <q-toolbar-title shrink class="text-weight-bold">
-            ROOOMM
-          </q-toolbar-title>
+          <router-link to="/" class="home-link">
+            <q-toolbar-title shrink class="text-weight-bold" style="font-size: 25px;">
+              ROOOMM
+            </q-toolbar-title>
+          </router-link>
           <q-space />
           <div class="q-gutter-sm row items-center no-wrap">
-            <q-btn round dense flat color="grey-8" icon="notifications">
-              <q-badge color="red" text-color="white" floating> 2 </q-badge>
-              <q-tooltip>Notifications</q-tooltip>
-            </q-btn>
+            <router-link to="/notifications">
+              <q-btn round dense flat color="grey-8" icon="notifications">
+                <q-badge color="red" text-color="white" floating> 2 </q-badge>
+                <q-tooltip>Notifications</q-tooltip>
+              </q-btn>
+            </router-link>
             <q-btn round flat @click="openAvatar" class="avatar-btn">
               <q-avatar size="40px">
                 <img :src="userImg" />
@@ -201,6 +205,11 @@ export default {
 }
 
 /*----------AVATAR-LINK --------*/
+.home-link {
+  margin-left: 15px;
+  text-decoration: none;
+  color: inherit;
+}
 
 .side-bar-title {
   margin-top: 10px;
