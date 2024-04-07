@@ -27,15 +27,24 @@ class UserService {
     await api.post(`${this.path}/forget-password`, { email });
   }
 
-  async resetPassword(user_id, password) {
-    await api.post(`${this.path}/reset-password`, { user_id, password });
+  async sendmail(user_email){
+    await api.post(`${this.userPath}/sendEmail/forget-password`, user_email);  
+  }
+
+  async sendmail(user_email){
+    await api.post(`${this.userPath}/sendEmail/forget-password`, user_email);  
+  }
+
+  async resetPassword(user_id, password){
+    console.log( user_id, password);
+    await api.patch(`${this.userPath}/reset-password`, {user_id}, password);
   }
 
   async getUserId(id) {
     return (await api.get(`${this.userPath}/${id}`)).data;
   }
 
-  async update(id, data) {
+  async update(id, data){
     return (await api.patch(`${this.userPath}/${id}`, data)).data;
   }
 

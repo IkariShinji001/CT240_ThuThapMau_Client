@@ -13,18 +13,30 @@ class ProjectMemberService {
   }
 
   async removeProjectMember(memberId, projectId) {
-    return (await api.delete(`${this.path}/projects/${projectId}/users/${memberId}`)).data;
+    return (
+      await api.delete(`${this.path}/projects/${projectId}/users/${memberId}`)
+    ).data;
   }
 
   async addMembersToProject(user_ids, projectId) {
-    return (await api.post(`${this.path}/projects/${projectId}`, user_ids)).data;
+    return (await api.post(`${this.path}/projects/${projectId}`, user_ids))
+      .data;
   }
-  
-  async addOwnerToProjectMember(userId, projectId){
-    return (await api.post(`${this.path}/owner-projects/${projectId}`, userId)).data;
+
+  async addOwnerToProjectMember(userId, projectId) {
+    return (await api.post(`${this.path}/owner-projects/${projectId}`, userId))
+      .data;
   }
-  async updateMemberStatus(body){
+  async updateMemberStatus(body) {
     return (await api.patch(`${this.path}`, body)).data;
+  }
+
+  async requestToJoinProject(userId, inviteCode) {
+    return (
+      await api.get(
+        `${this.path}/users/${userId}/request-join-to-project/${inviteCode}`
+      )
+    ).data;
   }
 }
 

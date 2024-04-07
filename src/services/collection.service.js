@@ -25,6 +25,10 @@ class CollectionsService {
       })
     ).data;
   }
+
+  async updateCollection(collection_id, payload) {
+    return (await api.patch(`${this.path}/${collection_id}`, payload)).data;
+  }
 }
 
 export default new CollectionsService();

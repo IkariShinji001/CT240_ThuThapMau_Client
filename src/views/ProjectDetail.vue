@@ -2,7 +2,7 @@
   <q-page>
     <div class="wrapper" v-if="project">
       <div class="banner">
-        <img src="https://gstatic.com/classroom/themes/img_learnlanguage.jpg" />
+        <img :src="project.project_image_url" />
         <p class="project_name">{{ project.project_name }}
           <br>
         <p class="status_text">Trạng thái: {{ project.project_status }}</p>
@@ -161,6 +161,7 @@
           const newCollection = await collectionService.createCollection(collectionAdd);
           collections.value.push(newCollection);
           console.log(collections.value);
+          openAdd.value = false;
           toast.success("Đã thêm đợt thu thập thành công");
         } catch (error) {
           console.log(error)
@@ -209,6 +210,9 @@
       const handleUpdateProject = async () => {
         try {
           await projectService.updateProjectById(projectId.value, projectUpdate);
+          project.value.project_name = projectUpdate.project_name;
+          project.value.project_status = projectUpdate.project_status;
+          openUpdate.value = false;
           toast.success("Dự án đã cập nhật thông tin thành công");
         } catch (error) {
           console.error(error);

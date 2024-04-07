@@ -2,41 +2,97 @@
   <q-page class="page">
     <div class="header">
       <h3 v-if="data.length > 0">Thông báo ({{ data.length }})</h3>
-      <div class="img-container">
-        <img class="notification-img"
+      <div class="img-container" v-else>
+        <img
+          class="notification-img"
           src="https://static.vecteezy.com/system/resources/previews/004/968/451/non_2x/turn-off-no-message-notification-concept-illustration-flat-design-eps10-modern-graphic-element-for-landing-page-empty-state-ui-infographic-vector.jpg"
-          alt="Éo có" />
+          alt="Éo có"
+        />
+      </div>
+    </div>
+    <div class="invite">
+      <div v-if="data" class="body">
+        <div v-for="notification in data" :key="notification.project_id">
+          <div class="notification-info" v-if="notification.user">
+            <div class="infor">
+              <div class="mail">
+                <q-icon name="mail" class="mail-icon"></q-icon>
+              </div>
+              <div class="noti-main">
+                <p class="invite">
+                  {{ notification?.user?.user_full_name }} /{{
+                    notification?.project_name
+                  }}
+                </p>
+                <p class="invite">
+                  Lời mời bạn tham gia dự án
+                  {{ notification?.project_name }} từ{{
+                    notification?.user?.user_full_name
+                  }}
+                </p>
+              </div>
+            </div>
+            <div class="img">
+              <img
+                :src="notification.user.user_image_url"
+                class="img-projectOwner"
+              />
+            </div>
+            <div class="accept-status">
+              <q-icon
+                name="check"
+                class="accept-status-qicon"
+                @click="updateMemberStatus(notification.project_id, 2)"
+              ></q-icon>
+              <q-icon
+                name="close"
+                class="accept-status-qicon"
+                @click="updateMemberStatus(notification.project_id, 0)"
+              ></q-icon>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div v-if="data" class="body">
-      <div v-for="notification in data" :key="notification.project_id">
-        <div class="notification-info" v-if="notification.user">
-          <div class="infor">
-            <div class="mail">
-              <q-icon name="mail" class="mail-icon"></q-icon>
+
+
+    <p> Yeu cau </p>
+    <div class="request">
+      <div v-if="dataReq" class="body">
+        <div v-for="notification in dataReq" :key="notification.project_id">
+          <div class="notification-info" v-if="notification.user">
+            <div class="infor">
+              <div class="mail">
+                <q-icon name="mail" class="mail-icon"></q-icon>
+              </div>
+              <div class="noti-main">
+                <p class="invite">
+                  {{ notification?.user?.user_full_name }} /{{
+                    notification?.project_name
+                  }}
+                </p>
+                <p class="invite">
+                  Yêu cầu tham gia dự án
+                  {{ notification?.project_name }} từ{{
+                    notification?.user?.user_full_name
+                  }}
+                </p>
+              </div>
             </div>
-            <div class="noti-main">
-              <p class="invite">
-                {{ notification?.user?.user_full_name }} /{{
-        notification?.project_name
-      }}
-              </p>
-              <p class="invite">
-                Lời mời bạn tham gia dự án {{ notification?.project_name }} từ{{
-        notification?.user?.user_full_name
-      }}
-              </p>
+            <div class="img">
+              <img
+                :src="notification.user.user_image_url"
+                class="img-projectOwner"
+              />
             </div>
-          </div>
-          <div class="img">
-            <img :src="notification.user.user_image_url" class="img-projectOwner" />
-          </div>
-          <div class="accept-status">
-            <q-icon name="check" class="accept-status-qicon"
-              @click="updateMemberStatus(notification.project_id, 2)"></q-icon>
-            <q-icon name="close" class="accept-status-qicon"
-              @click="updateMemberStatus(notification.project_id, 0)"></q-icon>
+            <div class="accept-status">
+              <q-icon
+                name="close"
+                class="accept-status-qicon"
+                @click="updateMemberStatusRequest(notification.project_id, 0)"
+              ></q-icon>
+            </div>
           </div>
         </div>
       </div>
@@ -58,6 +114,7 @@ export default {
     const route = useRoute();
     const user_id = JSON.parse(localStorage.getItem("user")).user_id;
     const data = ref([]);
+    const dataReq = ref([]);
     const users = ref();
     const projectMemberUpdate = reactive({
       user_id: "",
@@ -66,8 +123,8 @@ export default {
     });
 
     onBeforeMount(async () => {
-      data.value = await projectService.getAllNotificationsByUserId(user_id, 1);
-      console.log(data.value);
+      data.value = await projectService.getAllNotificationsByUserId(user_id, 0);
+      dataReq.value = await projectService.getAllNotificationsByUserId(user_id, 1);
     });
 
     // Truyen xuong ma ko nhan z
@@ -90,10 +147,30 @@ export default {
         console.log("Xảy ra lỗi trong quá trình cập nhật");
       }
     };
+    const updateMemberStatusRequest = async (project_id, accept_status) => {
+      const index = dataReq.value.findIndex(
+        (project) => project.project_id === project_id
+      );
+      try {
+        await projectMemberService.updateMemberStatus({
+          user_id,
+          project_id,
+          accept_status,
+        });
+        dataReq.value.splice(index, 1);
+
+        toast.success("Cập nhật thông tin thành công");
+      } catch (error) {
+        console.error(error);
+        console.log("Xảy ra lỗi trong quá trình cập nhật");
+      }
+    };
     return {
       users,
       data,
+      dataReq,
       updateMemberStatus,
+      updateMemberStatusRequest
     };
   },
 };
@@ -107,6 +184,7 @@ export default {
   border: 1px solid #cccc;
   border-radius: 10px;
   align-items: center;
+  margin-bottom: 8px;
 }
 
 .notification-info:hover {
