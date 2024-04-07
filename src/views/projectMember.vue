@@ -1,7 +1,9 @@
 <template>
   <q-page>
-    <div class="container">
+    <div class="container" v-if="project">
       <div>
+        <div class="inviteCode"><b>Mã tham gia vào dự án: </b>{{ project.inviteCode }}</div>
+
         <h3>Trưởng dự án</h3>
         <q-separator size="5px" />
         <div v-if="projectOwner" class="owner">
@@ -65,266 +67,278 @@
 </template>
 
 <script>
-import { onBeforeMount, ref } from "vue";
-import { useRoute } from "vue-router";
-import projectMemberService from "../services/projectMember.service";
-import { useToast } from "vue-toastification";
-import userService from "../services/user.service";
+  import { onBeforeMount, ref } from "vue";
+  import { useRoute } from "vue-router";
+  import projectMemberService from "../services/projectMember.service";
+  import { useToast } from "vue-toastification";
+  import userService from "../services/user.service";
+  import projectService from "../services/project.service";
 
-export default {
-  setup() {
-    const toast = useToast();
-    const route = useRoute();
-    const projectId = route.params.id;
-    const projectMemer = ref();
-    const userId = JSON.parse(localStorage.getItem("user")).user_id;
-    const projectOwner = ref();
-    const openAdd = ref();
-    const userEmailAdd = ref();
-    const memberWaitToAdd = ref([]);
+  export default {
+    setup() {
+      const toast = useToast();
+      const route = useRoute();
+      const projectId = route.params.id;
+      const projectMemer = ref();
+      const userId = JSON.parse(localStorage.getItem("user")).user_id;
+      const projectOwner = ref();
+      const openAdd = ref();
+      const userEmailAdd = ref();
+      const memberWaitToAdd = ref([]);
+      const project = ref();
 
-    onBeforeMount(async () => {
-      const data = await projectMemberService.getProjectMember(projectId, 2);
-      console.log(data);
-      projectMemer.value = data.map((value) => {
-        return value.id.user;
+      onBeforeMount(async () => {
+        project.value = await projectService.getProjectById(projectId);
+        const data = await projectMemberService.getProjectMember(projectId, 2);
+        console.log(data);
+        projectMemer.value = data.map((value) => {
+          return value.id.user;
+        });
+        projectOwner.value = data.find((element) => {
+          return element.id.project.user.user_id === element.id.user.user_id;
+        });
+        projectOwner.value = projectOwner.value.id.user;
+        projectMemer.value = projectMemer.value.filter((value) => {
+          return value.user_id !== projectOwner.value.user_id;
+        });
       });
-      projectOwner.value = data.find((element) => {
-        return element.id.project.user.user_id === element.id.user.user_id;
-      });
-      projectOwner.value = projectOwner.value.id.user;
-      projectMemer.value = projectMemer.value.filter((value) => {
-        return value.user_id !== projectOwner.value.user_id;
-      });
-    });
 
-    const removeMemberFromProject = async (memberId) => {
-      const user = projectMemer.value.find((userMember) => {
-        return userMember.user_id === memberId;
-      });
-      const confirm = window.confirm(
-        "Bạn muốn xóa " + user.user_full_name + " ra khỏi dự án!"
-      );
-      if (!confirm) {
-        return;
-      }
-      try {
-        await projectMemberService.removeProjectMember(memberId, projectId);
-        projectMemer.value.splice(
-          projectMemer.value.findIndex((user) => user.user_id === memberId),
+      const removeMemberFromProject = async (memberId) => {
+        const user = projectMemer.value.find((userMember) => {
+          return userMember.user_id === memberId;
+        });
+        const confirm = window.confirm(
+          "Bạn muốn xóa " + user.user_full_name + " ra khỏi dự án!"
+        );
+        if (!confirm) {
+          return;
+        }
+        try {
+          await projectMemberService.removeProjectMember(memberId, projectId);
+          projectMemer.value.splice(
+            projectMemer.value.findIndex((user) => user.user_id === memberId),
+            1
+          );
+          toast.success(
+            "Xóa " + user.user_full_name + " ra khỏi dự án thành công"
+          );
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      const handleSubmit = async () => {
+        const listUserIdAdd = memberWaitToAdd.value.map((user) => user.user_id);
+        try {
+          await projectMemberService.addMembersToProject(
+            listUserIdAdd,
+            projectId
+          );
+          toast.success("Thêm thành công");
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      const handleAddUserToListWait = async () => {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const email = userEmailAdd.value.trim();
+
+        if (!emailPattern.test(email)) {
+          toast.error("Không đúng định dạng email");
+        }
+
+        for (const member of projectMemer.value) {
+          if (member.user_email === email) {
+            toast.error("Thành viên này đã có trong dự án");
+            return;
+          }
+        }
+
+        if (email === projectOwner.value.user_email) {
+          toast.error("Thành viên này đã có trong dự án");
+          return;
+        }
+
+        for (const member of memberWaitToAdd.value) {
+          if (member.user_email === email) {
+            toast.error("Thành viên này đã có trong dự án");
+            return;
+          }
+        }
+
+        try {
+          const user = await userService.getUserByEmail(email);
+          if (user) {
+            memberWaitToAdd.value.push(user);
+            userEmailAdd.value = "";
+            return;
+          }
+
+          toast.error("Không tồn tại email này");
+          return;
+        } catch (error) {
+          console.log(error);
+          toast.error("Không tồn tại email này");
+        }
+      };
+
+      const handleRemoveUserFromListWait = (userMail) => {
+        memberWaitToAdd.value.splice(
+          memberWaitToAdd.value.findIndex((user) => user === userMail),
           1
         );
-        toast.success(
-          "Xóa " + user.user_full_name + " ra khỏi dự án thành công"
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    };
+      };
 
-    const handleSubmit = async () => {
-      const listUserIdAdd = memberWaitToAdd.value.map((user) => user.user_id);
-      try {
-        await projectMemberService.addMembersToProject(
-          listUserIdAdd,
-          projectId
-        );
-        toast.success("Thêm thành công");
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    const handleAddUserToListWait = async () => {
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const email = userEmailAdd.value.trim();
-
-      if (!emailPattern.test(email)) {
-        toast.error("Không đúng định dạng email");
-      }
-
-      for (const member of projectMemer.value) {
-        if (member.user_email === email) {
-          toast.error("Thành viên này đã có trong dự án");
-          return;
-        }
-      }
-
-      if (email === projectOwner.value.user_email) {
-        toast.error("Thành viên này đã có trong dự án");
-        return;
-      }
-
-      for (const member of memberWaitToAdd.value) {
-        if (member.user_email === email) {
-          toast.error("Thành viên này đã có trong dự án");
-          return;
-        }
-      }
-
-      try {
-        const user = await userService.getUserByEmail(email);
-        if (user) {
-          memberWaitToAdd.value.push(user);
-          userEmailAdd.value = "";
-          return;
-        }
-
-        toast.error("Không tồn tại email này");
-        return;
-      } catch (error) {
-        console.log(error);
-        toast.error("Không tồn tại email này");
-      }
-    };
-
-    const handleRemoveUserFromListWait = (userMail) => {
-      memberWaitToAdd.value.splice(
-        memberWaitToAdd.value.findIndex((user) => user === userMail),
-        1
-      );
-    };
-
-    return {
-      projectOwner,
-      projectMemer,
-      removeMemberFromProject,
-      openAdd,
-      memberWaitToAdd,
-      userEmailAdd,
-      handleAddUserToListWait,
-      handleRemoveUserFromListWait,
-      handleSubmit,
-      userId,
-    };
-  },
-};
+      return {
+        projectOwner,
+        projectMemer,
+        removeMemberFromProject,
+        openAdd,
+        memberWaitToAdd,
+        userEmailAdd,
+        handleAddUserToListWait,
+        handleRemoveUserFromListWait,
+        handleSubmit,
+        userId,
+        project
+      };
+    },
+  };
 </script>
 
 <style scoped>
-.container {
-  width: 95%;
-  margin: 0 auto;
-}
+  .container {
+    width: 95%;
+    margin: 0 auto;
+  }
 
-.owner {
-  display: flex;
-}
+  .owner {
+    display: flex;
+  }
 
-.img-owner {
-  width: 60px;
-  border-radius: 100px;
-}
+  .img-owner {
+    width: 60px;
+    border-radius: 100px;
+  }
 
-.owner-name {
-  height: inherit;
-  display: flex;
-  justify-items: center;
-}
+  .owner-name {
+    height: inherit;
+    display: flex;
+    justify-items: center;
+  }
 
-.owner,
-.members {
-  margin: 20px 0 !important;
-}
+  .owner,
+  .members {
+    margin: 20px 0 !important;
+  }
 
-h3 {
-  font-size: 25px;
-  font-weight: bold;
-}
+  h3 {
+    font-size: 25px;
+    font-weight: bold;
+  }
 
-.member {
-  display: flex;
-  margin: 10px 0;
-  width: 100%;
-  justify-content: space-between;
-}
+  .member {
+    display: flex;
+    margin: 10px 0;
+    width: 100%;
+    justify-content: space-between;
+  }
 
-.member-container {
-  display: flex;
-  margin: 10px 0;
-}
+  .member-container {
+    display: flex;
+    margin: 10px 0;
+  }
 
-.name {
-  display: flex;
-  align-items: center;
-  font-size: 20px;
-  margin-left: 20px;
-}
+  .name {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    margin-left: 20px;
+  }
 
-.function {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin-right: 50px;
-  font-size: 25px;
-  color: rgb(18, 18, 132);
-}
+  .function {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-right: 50px;
+    font-size: 25px;
+    color: rgb(18, 18, 132);
+  }
 
-.function:hover {
-  color: brown;
-  cursor: pointer;
-}
+  .function:hover {
+    color: brown;
+    cursor: pointer;
+  }
 
-.member-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+  .member-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-.add-icon {
-  font-size: 30px;
-  margin-right: 50px;
-  color: rgb(71, 71, 237);
-  cursor: pointer;
-}
+  .add-icon {
+    font-size: 30px;
+    margin-right: 50px;
+    color: rgb(71, 71, 237);
+    cursor: pointer;
+  }
 
-.add-icon:hover {
-  color: black;
-}
+  .add-icon:hover {
+    color: black;
+  }
 
-.add-card {
-  max-width: 1000px;
-  width: 1000px;
-  text-align: center;
-}
+  .add-card {
+    max-width: 1000px;
+    width: 1000px;
+    text-align: center;
+  }
 
-.btn-submit {
-  margin-top: 20px;
-  padding: 5px 80px;
-  font-size: 18px;
-}
+  .btn-submit {
+    margin-top: 20px;
+    padding: 5px 80px;
+    font-size: 18px;
+  }
 
-.user-email-add {
-  font-size: 18px;
-  width: 70%;
-  margin: 0 auto;
-}
+  .user-email-add {
+    font-size: 18px;
+    width: 70%;
+    margin: 0 auto;
+  }
 
-.input-add-container {
-  display: flex;
-}
+  .input-add-container {
+    display: flex;
+  }
 
-.btn-add {
-  width: 20%;
-}
+  .btn-add {
+    width: 20%;
+  }
 
-.user_mail {
-  text-align: left;
-  margin: 0;
-  margin-left: 20px;
-  font-size: 20px;
-  font-weight: normal;
-}
+  .user_mail {
+    text-align: left;
+    margin: 0;
+    margin-left: 20px;
+    font-size: 20px;
+    font-weight: normal;
+  }
 
-.member-add {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+  .member-add {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-.icon-cancel {
-  margin-right: 100px;
-  font-size: 30px;
-  cursor: pointer;
-}
+  .icon-cancel {
+    margin-right: 100px;
+    font-size: 30px;
+    cursor: pointer;
+  }
+
+  .inviteCode {
+    text-align: right;
+    font-size: 20px;
+  }
+
+
+
 </style>

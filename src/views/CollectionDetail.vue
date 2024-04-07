@@ -164,8 +164,8 @@
         try {
           const updatedCollection = await collectionService.updateCollection(collection_id, collectionUpdate);
           collection.value.collection_name = updatedCollection.collection_name;
-          collection.value.collection_start = formatDateTime(updatedCollection.collection_start);
-          collection.value.collection_end = formatDateTime(updatedCollection.collection_end);
+          collection.value.collection_start = updatedCollection.collection_start;
+          collection.value.collection_end = updatedCollection.collection_end;
           collection.value.collection_description = updatedCollection.collection_description;
           openUpdate.value = false;
           toast.success("Cập nhật thông tin thành công");

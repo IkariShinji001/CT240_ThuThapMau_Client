@@ -15,10 +15,21 @@
         </div>
 
         <div class="create-project-class">
+          <q-btn flat round class="q-btn-class" style="bottom: 2px; right: 5px"
+            @click="openRequestToJoinProject = true">
+            <q-icon name="integration_instructions" class="invite-icon"></q-icon>
+            <q-tooltip style="font-size: 14px; font-weight: 700">
+              Tham gia dự án
+            </q-tooltip>
+          </q-btn>
+        </div>
+
+
+        <div class="create-project-class">
           <q-btn flat round class="q-btn-class" style="bottom: 2px; right: 5px" @click="createProject">
             <q-icon name="add" class="plus-icon"></q-icon>
             <q-tooltip style="font-size: 14px; font-weight: 700">
-              create project
+              Tạo dự án mới
             </q-tooltip>
           </q-btn>
         </div>
@@ -27,6 +38,16 @@
         <q-card>
           <CreateProjectModal v-if="isModalVisible" @close="closeModal" @getNewProject="getNewProject">
           </CreateProjectModal>
+        </q-card>
+      </q-dialog>
+
+      <q-dialog v-model="openRequestToJoinProject">
+        <q-card style="max-width: 1000px; width: 900px;">
+          <h3 style="text-align: center;">Tham gia dự án bằng mã mời</h3>
+          <q-card-section>
+            <q-input style="font-size: 18px;" outlined label="Nhập mã mời của dự án" v-model="inviteCode"></q-input>
+            <q-btn color="primary" class="btn-submit-join" @click="handleJoinToProject">THAM GIA</q-btn>
+          </q-card-section>
         </q-card>
       </q-dialog>
       <projectBox :project="filteredProjectByOption" :user="user"></projectBox>
@@ -39,19 +60,23 @@
   import ProjectBox from "../components/ProjectBox.vue";
   import projectService from "../services/project.service";
   import CreateProjectModal from "../components/CreateProjectModal.vue";
-
+  import projectMemberService from "../services/projectMember.service";
+  import { useToast } from "vue-toastification";
   export default {
     components: {
       projectBox: ProjectBox,
       CreateProjectModal,
     },
     setup() {
+      const toast = useToast();
       const searchProjectName = ref();
       const projects = ref([]);
       let user = ref();
       let isModalVisible = ref(false);
       const filterInput = ref("Tất cả");
       const options = ref(["Tất cả", "Cá nhân", "Thành viên"]);
+      const openRequestToJoinProject = ref();
+      const inviteCode = ref();
 
       onBeforeMount(async () => {
         try {
@@ -107,6 +132,22 @@
         );
       });
 
+      const handleJoinToProject = async () => {
+        const user_id = user.value.user_id;
+        if (!inviteCode.value) {
+          toast.error("Không được để trống trường mã mời");
+          return;
+        }
+
+        try {
+          await projectMemberService.requestToJoinProject(user_id, inviteCode.value);
+          toast.success("Đã gửi yêu cầu tham gia dự án");
+        } catch (error) {
+          toast.error("Mã mời không tồn tại");
+          console.log(error)
+        }
+      }
+
       function cancelHandler() {
         filterInput.value = "Tất cả";
         searchProjectName.value = "";
@@ -120,11 +161,13 @@
         createProject,
         closeModal,
         filteredProjectByOption,
-
+        openRequestToJoinProject,
+        inviteCode,
         filterInput,
         options,
         cancelHandler,
         getNewProject,
+        handleJoinToProject
       };
     },
   };
@@ -146,6 +189,7 @@
 
   .search-filter-class {
     display: flex;
+    align-items: center;
   }
 
   .input-box {
@@ -164,4 +208,20 @@
     font-size: 40px;
     color: var(--secondary-color);
   }
+
+  .invite-icon {
+    font-size: 40px;
+    color: var(--secondary-color);
+    cursor: pointer;
+  }
+
+  .btn-submit-join {
+    display: flex;
+    margin: 0 auto;
+    padding: 5px 80px;
+    margin-top: 20px;
+  }
+
+
+
 </style>
