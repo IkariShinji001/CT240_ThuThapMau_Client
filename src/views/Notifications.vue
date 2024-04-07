@@ -1,7 +1,12 @@
 <template>
   <q-page class="page">
     <div class="header">
-      <h3>Thông báo ({{ data.length }})</h3>
+      <h3 v-if="data.length > 0">Thông báo ({{ data.length }})</h3>
+      <div class="img-container">
+        <img class="notification-img"
+          src="https://static.vecteezy.com/system/resources/previews/004/968/451/non_2x/turn-off-no-message-notification-concept-illustration-flat-design-eps10-modern-graphic-element-for-landing-page-empty-state-ui-infographic-vector.jpg"
+          alt="Éo có" />
+      </div>
     </div>
 
     <div v-if="data" class="body">
@@ -12,24 +17,26 @@
               <q-icon name="mail" class="mail-icon"></q-icon>
             </div>
             <div class="noti-main">
-              <p class="invite">{{ notification?.user?.user_full_name }} /{{ notification?.project_name }}</p>
-              <p class="invite">Lời mời bạn tham gia dự án {{ notification?.project_name }} từ{{ notification?.user?.user_full_name }}</p>
+              <p class="invite">
+                {{ notification?.user?.user_full_name }} /{{
+        notification?.project_name
+      }}
+              </p>
+              <p class="invite">
+                Lời mời bạn tham gia dự án {{ notification?.project_name }} từ{{
+        notification?.user?.user_full_name
+      }}
+              </p>
             </div>
           </div>
           <div class="img">
-            <img :src="notification.user.user_image_url" class="img-projectOwner"/>
+            <img :src="notification.user.user_image_url" class="img-projectOwner" />
           </div>
           <div class="accept-status">
-            <q-icon
-              name="check"
-              class="accept-status-qicon"
-              @click="updateMemberStatus(notification.project_id, 2)"
-            ></q-icon>
-            <q-icon
-              name="close"
-              class="accept-status-qicon"
-              @click="updateMemberStatus( notification.project_id, 0)"
-            ></q-icon>
+            <q-icon name="check" class="accept-status-qicon"
+              @click="updateMemberStatus(notification.project_id, 2)"></q-icon>
+            <q-icon name="close" class="accept-status-qicon"
+              @click="updateMemberStatus(notification.project_id, 0)"></q-icon>
           </div>
         </div>
       </div>
@@ -43,7 +50,7 @@ import { useRoute } from "vue-router";
 import projectService from "../services/project.service";
 import userService from "../services/user.service";
 import projectMemberService from "../services/projectMember.service";
-import {useToast} from "vue-toastification"
+import { useToast } from "vue-toastification";
 
 export default {
   setup() {
@@ -65,8 +72,10 @@ export default {
 
     // Truyen xuong ma ko nhan z
 
-    const updateMemberStatus = async ( project_id, accept_status) => {
-      const index = data.value.findIndex((project) => project.project_id === project_id);
+    const updateMemberStatus = async (project_id, accept_status) => {
+      const index = data.value.findIndex(
+        (project) => project.project_id === project_id
+      );
       try {
         await projectMemberService.updateMemberStatus({
           user_id,
@@ -74,7 +83,7 @@ export default {
           accept_status,
         });
         data.value.splice(index, 1);
-       
+
         toast.success("Cập nhật thông tin thành công");
       } catch (error) {
         console.error(error);
@@ -99,6 +108,7 @@ export default {
   border-radius: 10px;
   align-items: center;
 }
+
 .notification-info:hover {
   background-color: #ddf4ff;
 }
@@ -107,12 +117,15 @@ export default {
   display: flex;
   padding: 8px;
 }
+
 .mail {
   padding: 0 8px 8px 8px;
 }
+
 .mail-icon {
   size: 25px;
 }
+
 .invite {
   margin: 0;
 }
@@ -127,8 +140,8 @@ export default {
   border-top-right-radius: 50% !important;
   border-bottom-right-radius: 50% !important;
   border-bottom-left-radius: 50% !important;
-  
 }
+
 .accept-status {
   right: 7px;
   top: 7px;
@@ -141,20 +154,33 @@ export default {
   border-radius: 5px;
   padding-right: 16px;
 }
+
 .accept-status-qicon:hover {
   background: #d0d7de;
   color: #24292f;
 }
 
-.noti-main{
+.noti-main {
   width: 100%;
 }
 
-.img{
+.img {
   width: 20%;
 }
+
+.img-container {
+  width: 100%;
+  text-align: center;
+}
+
+.notification-img {
+  width: 40%;
+  height: auto;
+  margin: 0 auto;
+}
+
 /* set cung cho info de khong bi choi suc */
-.infor{
+.infor {
   width: 60%;
 }
 </style>

@@ -59,6 +59,14 @@ const router = createRouter({
           },
           component: () => import("../views/CollectionDetail.vue"),
         },
+        { 
+          path: "/collection-forms/:id",
+          name: "Chi tiết đợt thu thập",
+          meta: {
+            title: "Chi tiết đợt thu thập",
+          },
+          component: () => import("../views/FormDetail.vue"),
+        },
       ],
       component: () => import("../layouts/DashBoard.vue"),
     },
@@ -92,21 +100,6 @@ const router = createRouter({
       },
       component: () => import("../views/Signup.vue"),
     },
-    {
-      path: "/user/:id",
-      meta: {
-        title: "Thông tin người dùng",
-      },
-      component: () => import("../views/User.vue"),
-    },
-    {
-      path: "/users",
-      meta: {
-        title: "Đăng ký tài khoản",
-      },
-      component: () => import("../layouts/test.vue"),
-    },
-
     {
       path: "/collection/:collection_id/user/:user_id",
       name: "Tạo from",
