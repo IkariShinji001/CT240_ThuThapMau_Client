@@ -35,7 +35,7 @@
           </q-toolbar>
 
           <q-list bordered>
-            <q-item clickable v-ripple v-for="opt in avatarOptions" :key="opt" >
+            <q-item clickable v-ripple v-for="opt in avatarOptions">
               <router-link :to="`${opt.path}`" class="avatar-link">
                 <q-item-section class="avatar-link-section1" :value="opt">
                   <q-icon size="30px" :name="`${opt.icon}`" class="avatar-link-icon" />

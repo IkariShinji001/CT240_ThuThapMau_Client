@@ -21,7 +21,7 @@
               <q-input
                 type="password"
                 class="input"
-                v-model="repasswd"
+                v-model="user.repasswd"
                 outlined
                 label="Confirm password"
               >
@@ -34,9 +34,6 @@
                 >Xác nhận</q-btn>
           </div>
         </section>
-        <div class="image-container">
-        <img src="../assets/THANH DUY BUFFET.png" />
-      </div>
       </div>
     </div>
   </q-page>
@@ -56,6 +53,7 @@ export default {
 
     const user = reactive({
       user_password: '',
+      repasswd:''
     });
     const repasswd = ref() 
     const isMatchedPassword = (user_password, repasswd) => {
@@ -63,13 +61,14 @@ export default {
     };
     
     const handleResetPassword = async () => {
-      if (!isMatchedPassword(user.user_password.value, user.repasswd.value)) {
+ 
+      if (!isMatchedPassword(user.user_password, user.repasswd)) {
         toast.warning("Mật khẩu không trùng khớp");
         return;
       }
-
+      console.log(route.query.user_id, user.user_password);
       try {
-        await userService.resetPassword(route.query.user_id, password.value);
+        await userService.resetPassword(route.query.user_id, user.user_password);
         toast.success("Bạn đã đổi mật khẩu thành công");
         router.push({ path: "/login" });
       } catch (error) {
@@ -127,7 +126,7 @@ img {
 
 .container {
   /* background-color: rgba(240, 248, 255, 0.737) !important; */
-  background-image: url('../assets/background_login.jpg') !important;
+  background-image: url('../assets/img0.jpg') !important;
   min-height: 100vh;
   display: grid;
   grid-template-areas: "title title"

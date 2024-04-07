@@ -3,9 +3,7 @@
     <div class="wrapper">
       <div class="container">
         <h1 style="color: white;">Quên mật khẩu</h1>
-        <div class="image-container">
-          <img src="../assets/THANH DUY BUFFET.png" />
-        </div>
+        
         <section class="forgot-container">
           <div class="form-box">
             <h2>Quên mật khẩu</h2>
@@ -21,7 +19,7 @@
               </q-input>
             </div>
 
-            <q-btn class="btn-submit" color="primary" @click="handleForgetPassword"
+            <q-btn class="btn-submit" color="primary" @click="handleForgetPassword(user.user_email)"
               >Xác nhận</q-btn>
           </div>
         </section>
@@ -45,10 +43,10 @@ export default {
       user_email: '',
     });
 
-    const handleForgetPassword = async () => {
+    const handleForgetPassword = async (user_email) => {
       try {
-        await userService.forgetPassword(user.user_email.value);
-        toast.success("Vui lòng kiểm tra email " + user.user_email.value);
+        await userService.sendmail(user_email);
+        toast.success("Vui lòng kiểm tra email " + user_email);
       } catch (error) {
         console.log(error);
       }
@@ -64,7 +62,7 @@ export default {
 
 <style scoped>
 .wrapper {
-  background-image: url('../assets/background_login.jpg') !important;
+  background-image: url('../assets/img0.jpg') !important;
   min-height: 100vh;
 }
 .container {

@@ -59,12 +59,11 @@ export default {
     });
 
     onBeforeMount(async () => {
-      data.value = await projectService.getAllNotificationsByUserId(user_id, 1);
+      data.value = await projectService.getAllNotificationsByUserId(user_id, 0);
       console.log(data.value);
     });
 
     // Truyen xuong ma ko nhan z
-
     const updateMemberStatus = async ( project_id, accept_status) => {
       const index = data.value.findIndex((project) => project.project_id === project_id);
       try {
