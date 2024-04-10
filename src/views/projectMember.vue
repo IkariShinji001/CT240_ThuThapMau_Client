@@ -1,6 +1,10 @@
 <template>
   <q-page>
     <div class="container" v-if="project">
+      <div @click="goBackProject" class="go-back">
+        <p class="project-name"><q-icon name="arrow_back_ios" class="go-back-icon"></q-icon>{{ project.project_name }}
+        </p>
+      </div>
       <div>
         <div class="inviteCode"><b>Mã tham gia vào dự án: </b>{{ project.inviteCode }}</div>
 
@@ -68,7 +72,7 @@
 
 <script>
   import { onBeforeMount, ref } from "vue";
-  import { useRoute } from "vue-router";
+  import { useRoute, useRouter } from "vue-router";
   import projectMemberService from "../services/projectMember.service";
   import { useToast } from "vue-toastification";
   import userService from "../services/user.service";
@@ -78,6 +82,7 @@
     setup() {
       const toast = useToast();
       const route = useRoute();
+      const router = useRouter();
       const projectId = route.params.id;
       const projectMemer = ref();
       const userId = JSON.parse(localStorage.getItem("user")).user_id;
@@ -184,6 +189,11 @@
         }
       };
 
+
+      const goBackProject = () => {
+        router.push({ path: `/projects/${projectId}` })
+      }
+
       const handleRemoveUserFromListWait = (userMail) => {
         const index = memberWaitToAdd.value.findIndex((user) => user.user_email === userMail);
         memberWaitToAdd.value.splice(
@@ -203,7 +213,8 @@
         handleRemoveUserFromListWait,
         handleSubmit,
         userId,
-        project
+        project,
+        goBackProject
       };
     },
   };
@@ -341,6 +352,28 @@
     font-size: 20px;
   }
 
+  .project_name {
+    font-size: 20px;
+  }
+
+
+  .go-back-icon {
+    font-size: 30px;
+    font-weight: bold;
+  }
+
+  .go-back {
+    width: fit-content;
+    cursor: pointer;
+  }
+
+  .go-back:hover {
+    color: #1976D2;
+  }
+
+  .project-name {
+    font-size: 20px;
+  }
 
 
 </style>

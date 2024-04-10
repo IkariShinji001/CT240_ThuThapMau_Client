@@ -1,5 +1,9 @@
 <template>
   <q-page>
+    <div @click="goBackProjects" class="go-back">
+      <p class="project-name"><q-icon name="arrow_back_ios" class="go-back-icon"></q-icon>Danh sách các dự án
+      </p>
+    </div>
     <div class="wrapper" v-if="project">
       <div class="banner">
         <img class="img-banner" :src="project.project_image_url" />
@@ -201,6 +205,10 @@
         });
       };
 
+      const goBackProjects = () => {
+        router.push({ path: '/' })
+      }
+
       const handleOpenUpdate = () => {
         projectUpdate.project_name = project.value.project_name;
         projectUpdate.project_status = project.value.project_status;
@@ -241,7 +249,8 @@
         goToMember,
         openAdd,
         collectionAdd,
-        handleAddCollection
+        handleAddCollection,
+        goBackProjects
       };
     },
   };
@@ -428,4 +437,24 @@
     object-fit: cover;
     object-position: center;
   }
+
+
+  .go-back-icon {
+    font-size: 30px;
+    font-weight: bold;
+  }
+
+  .go-back {
+    width: fit-content;
+    cursor: pointer;
+  }
+
+  .go-back:hover {
+    color: #1976D2;
+  }
+
+  .project-name {
+    font-size: 20px;
+  }
+
 </style>
