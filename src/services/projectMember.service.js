@@ -38,6 +38,11 @@ class ProjectMemberService {
       )
     ).data;
   }
+
+  async getNotificationRequest(userId){
+    return (await api.get(`${this.path}/users/${userId}/notification/request`)).data;
+  }
+
 }
 
 export default new ProjectMemberService();

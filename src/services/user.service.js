@@ -38,7 +38,7 @@ class UserService {
 
   async resetPassword(user_id, password){
     console.log( user_id, password);
-    await api.patch(`${this.userPath}/reset-password`, {user_id}, password);
+    await api.patch(`${this.userPath}/reset-password?user_id=${user_id}`, password);
   }
 
   async getUserId(id) {

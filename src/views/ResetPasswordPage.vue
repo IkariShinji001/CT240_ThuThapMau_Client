@@ -60,8 +60,9 @@ export default {
       return user_password === repasswd;
     };
     
+
     const handleResetPassword = async () => {
- 
+ console.log(route.query.user_id, user.user_password);
       if (!isMatchedPassword(user.user_password, user.repasswd)) {
         toast.warning("Mật khẩu không trùng khớp");
         return;
