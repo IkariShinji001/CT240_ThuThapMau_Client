@@ -1,9 +1,15 @@
 <template>
   <q-page class="container-parent">
+    <div @click="goBackCollection" class="go-back" v-if="collection">
+      <p class="collection-name">
+        <q-icon name="arrow_back_ios" class="go-back-icon"></q-icon
+        >{{ collection.collection_name }}
+      </p>
+    </div>
     <div class="container" v-if="collectionForm">
       <div class="header">
-        <p class="form-title">
-          <q-icon name="assignment" class="form-title-icon"></q-icon
+        <p class="header-title">
+          <q-icon name="assignment" class="header-title-icon"></q-icon
           >{{ collectionForm.collection_form_name }}
         </p>
 
@@ -47,7 +53,9 @@
     <!-- <<<<<< DIALOG 1>>>>>> ------- -->
     <q-dialog v-model="openWatch">
       <q-card class="card-add">
-        <h3>{{ collectionForm.collection_form_name }}</h3>
+        <p class="title-filled-form">
+          {{ collectionForm.collection_form_name }}
+        </p>
         <div v-for="(attr, idx) in selectedGroup" :key="idx" class="field-card">
           <q-field
             outlined
@@ -80,7 +88,7 @@
     <!-- <<<<<< DIALOG -2 >>>>>> ------- -->
     <q-dialog v-model="openAdd">
       <q-card class="card-add">
-        <h3>{{ collectionForm.collection_form_name }}</h3>
+        <p class="title-form-add">{{ collectionForm.collection_form_name }}</p>
         <div
           v-for="(attr, idx) in listAttributes"
           :key="idx"
@@ -131,14 +139,16 @@ import { ref, onBeforeMount } from "vue";
 import formService from "../services/form.service";
 import formValueService from "../services/formvalue.service";
 import attributeService from "../services/attribute.service";
+import collectionService from "../services/collection.service";
 import testCreateFormService from "../services/testCreateForm.service";
 import { useQuasar } from "quasar";
 import formatDate from "../util/formatDate";
+import router from "../router";
 
 export default {
   setup() {
     const $q = useQuasar();
-    const route = useRoute()
+    const route = useRoute();
     const collectionFormId = route.params.id;
     const collectionForm = ref();
     const userId = ref();
@@ -152,8 +162,15 @@ export default {
     const groupedFormsArray = ref([]);
     const selectedGroup = ref([]);
     const selectedGroupImgs = ref([]);
+    const projectId = route.params.project_id;
+    const collection = ref();
+    const collectionId = route.params.collection_id;
 
     onBeforeMount(async () => {
+      collection.value = await collectionService.getCollectionById(
+        collectionId
+      );
+      console.log(collection.value.collection_name);
       collectionForm.value = await formService.getCollectionFormById(
         collectionFormId
       );
@@ -165,7 +182,6 @@ export default {
       inputValues.value = listAttributes.value.map(() => ({
         collection_value: "",
       }));
-
 
       listFilledForm.value = await formValueService.getAllFormValue(
         collectionFormId
@@ -212,7 +228,6 @@ export default {
       });
     }
 
-    
     async function submitHandler(callback) {
       for (let i = 0; i < listAttributes.value.length - 1; i++) {
         const attr = listAttributes.value[i];
@@ -242,7 +257,7 @@ export default {
         openFormFunc();
         const createdForm = await testCreateFormService.createValue(fd);
 
-        const groupedForms = new Map()
+        const groupedForms = new Map();
         listFilledForm.value = [...listFilledForm.value, ...createdForm];
         listFilledForm.value.forEach((form) => {
           const key = `${form.user_id}_${form.collection_form_id}_${form.submit_time}`;
@@ -252,7 +267,7 @@ export default {
           groupedForms.get(key).push(form);
         });
         groupedFormsArray.value = Array.from(groupedForms.values());
-       
+
         if (callback) {
           callback();
         }
@@ -260,6 +275,12 @@ export default {
         console.log(e);
       }
     }
+
+    const goBackCollection = () => {
+      router.push({
+        path: `/projects/${projectId}/collections/${collectionId}`,
+      });
+    };
 
     function openFormDetail(group) {
       selectedGroup.value = group;
@@ -275,7 +296,7 @@ export default {
         collection_value: "",
       }));
 
-      listAttributeValue.value = []
+      listAttributeValue.value = [];
       file.value = [];
     }
 
@@ -298,6 +319,8 @@ export default {
       submitHandler,
       formatD,
       showNotif,
+      goBackCollection,
+      collection,
     };
   },
 };
@@ -322,17 +345,17 @@ export default {
   justify-content: space-between;
 }
 
-.form-title {
+.header-title {
   max-width: 600px;
   font-size: 32px;
   width: 80%;
   margin: 0 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: wrap;
+  font-size: 36px;
+  color: rgb(90, 90, 90);
 }
 
-.form-title-icon {
+.header-title-icon {
   border-radius: 50%;
   background: rgb(90, 90, 90);
   color: white;
@@ -340,10 +363,6 @@ export default {
   margin-right: 15px;
 }
 
-.form-title {
-  font-size: 36px;
-  color: rgb(90, 90, 90);
-}
 
 /* -------- submit-list  -----------*/
 
@@ -435,5 +454,30 @@ export default {
   padding: 10px;
   width: 200px;
   height: 200px;
+}
+
+.title-form-add,
+.title-filled-form {
+  margin: 20px 0;
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.go-back-icon {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.go-back {
+  width: fit-content;
+  cursor: pointer;
+}
+
+.go-back:hover {
+  color: #1976d2;
+}
+
+.collection-name {
+  font-size: 18px;
 }
 </style>
