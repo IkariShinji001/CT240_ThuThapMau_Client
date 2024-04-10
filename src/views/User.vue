@@ -82,10 +82,9 @@ export default {
     const editImg = async () => {
       userImage.value = URL.createObjectURL(user_img.value);
       try {
-        await userService.updateUserImage(id, user_img.value);
-        const user = await userService.getUserId(id);
-        localStorage.setItem("user", JSON.stringify(user));
-        // window.location.reload();
+        const res = await userService.updateUserImage(id, user_img.value);
+        localStorage.setItem("user", JSON.stringify(res));
+        window.location.reload();
       } catch (error) {
         console.log(error);
       }

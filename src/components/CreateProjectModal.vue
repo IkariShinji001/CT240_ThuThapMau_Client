@@ -26,6 +26,7 @@ import projectService from "../services/project.service";
 import projectMemberService from "../services/projectMember.service";
 import { useQuasar } from "quasar"
 import { useToast } from "vue-toastification";
+import eventBus from "../util/eventBus";
 export default {
   props: {
     project: Object,
@@ -50,6 +51,8 @@ export default {
     onBeforeMount(async () => {
       await getUserFromLocalStorage();
     });
+
+
     async function createProject(e) {
       e.preventDefault();
       $q.loading.show({
@@ -67,7 +70,7 @@ export default {
         fd.append("file", fileUploaded.value);
         fd.append("user_id", user.value.user_id);
         const createdProject = await projectService.createProject(fd);
-
+        
         try {
           await projectMemberService.addOwnerToProjectMember(
             user.value.user_id,
@@ -77,6 +80,7 @@ export default {
           console.log(error);
         }
         emit("getNewProject", createdProject);
+        eventBus.emit('getNewProject', createdProject)
         toast.success("Đã thêm dự án thành công");
 
       } catch (e) {

@@ -3,10 +3,21 @@
     <q-layout view="hHh Lpr lff" class="">
       <q-header elevated class="bg-white text-grey-8 q-py-xs" height-hint="58">
         <q-toolbar>
-          <q-btn flat dense round @click="drawer = !drawer" aria-label="Menu" icon="menu" />
+          <q-btn
+            flat
+            dense
+            round
+            @click="drawer = !drawer"
+            aria-label="Menu"
+            icon="menu"
+          />
 
           <router-link to="/" class="home-link">
-            <q-toolbar-title shrink class="text-weight-bold" style="font-size: 25px;">
+            <q-toolbar-title
+              shrink
+              class="text-weight-bold"
+              style="font-size: 25px"
+            >
               ROOOMM
             </q-toolbar-title>
           </router-link>
@@ -42,7 +53,11 @@
             <q-item clickable v-ripple v-for="opt in avatarOptions" :key="opt">
               <router-link :to="`${opt.path}`" class="avatar-link">
                 <q-item-section class="avatar-link-section1" :value="opt">
-                  <q-icon size="30px" :name="`${opt.icon}`" class="avatar-link-icon" />
+                  <q-icon
+                    size="30px"
+                    :name="`${opt.icon}`"
+                    class="avatar-link-icon"
+                  />
                 </q-item-section>
                 <q-item-section class="avatar-link-section2">
                   <span class="div2">{{ opt.text }}</span>
@@ -53,24 +68,43 @@
         </q-card>
       </q-dialog>
 
-
-      <q-drawer v-model="drawer" show-if-above :width="240" :breakpoint="500" bordered
-        style="background-color: var(--secondary-color)" class="q-drawer-container">
+      <q-drawer
+        v-model="drawer"
+        show-if-above
+        :width="240"
+        :breakpoint="500"
+        bordered
+        style="background-color: var(--secondary-color)"
+        class="q-drawer-container"
+      >
         <q-item-label header class="text-uppercase side-bar-title">
           Đã tham gia
         </q-item-label>
-        <q-scroll-area class="fit side-bar-container" style="height: 80% !important">
+        <q-scroll-area
+          class="fit side-bar-container"
+          style="height: 80% !important"
+        >
           <q-list class="side-bar-list-container">
-            <div v-for="pro in project" :key="pro.project_id">
-              <div @click="goToProject(pro.project_id)">
+            <div v-for="pro in getProjects" :key="pro.project_id">
+              <div
+                @click="goToProject(pro.project_id)"
+                v-if="
+                  pro.project_status == 'Đang hoạt động' ||
+                  (pro.project_status == 'Dừng hoạt động' &&
+                    pro.user.user_id == user.user_id)
+                "
+              >
                 <div class="side-bar-item">
                   <div class="project-item">
                     <q-icon name="task" size="34px" color="yellow">
-                      <q-tooltip max-width="200px" style="
-                            background-color: gray;
-                            color: white;
-                            font-size: 13px;
-                          ">
+                      <q-tooltip
+                        max-width="200px"
+                        style="
+                          background-color: gray;
+                          color: white;
+                          font-size: 13px;
+                        "
+                      >
                         {{ pro.project_name }}
                       </q-tooltip>
                     </q-icon>
@@ -94,13 +128,15 @@
 
 <script>
 import projectService from "../services/project.service";
-import { onBeforeMount, ref } from "vue";
+import { computed, onBeforeMount, ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
+import eventBus from "../util/eventBus";
+
 export default {
   setup() {
     const router = useRouter();
     const drawer = ref(false);
-    const project = ref();
+    const project = ref([]);
     const leftDrawerOpen = ref(false);
     let userImg = ref("");
     let user = ref({
@@ -119,6 +155,21 @@ export default {
       { text: "Đăng xuất", path: "/login", icon: "logout" },
     ]);
 
+    onBeforeMount(async () => {
+      getUserFromLocalStorage();
+      project.value = await projectService.getAllProject(user.value.user_id, 2);
+    });
+
+    watchEffect(() => {
+      eventBus.on("getNewProject", (createdProject) => {
+        project.value.push(createdProject);
+      });
+    });
+
+    const getProjects = computed(() => {
+      return project.value;
+    });
+
     function openAvatar() {
       isAvatarOpened.value = !isAvatarOpened.value;
     }
@@ -128,21 +179,13 @@ export default {
     }
 
     function getUserFromLocalStorage() {
-      const userData = localStorage.getItem("user");
-      if (userData) {
-        user.value = JSON.parse(userData);
-        userImg.value = user.value.user_image_url;
-      }
+      user.value = JSON.parse(localStorage.getItem("user"));
+      userImg.value = user.value.user_image_url;
     }
 
     const goToProject = (project_id) => {
-      router.replace({ path: `/projects/${project_id}` })
-    }
-
-    onBeforeMount(async () => {
-      getUserFromLocalStorage();
-      project.value = await projectService.getAllProject(user.value.user_id, 2);
-    });
+      router.replace({ path: `/projects/${project_id}` });
+    };
 
     return {
       leftDrawerOpen,
@@ -154,7 +197,8 @@ export default {
       isAvatarOpened,
       openAvatar,
       avatarOptions,
-      goToProject
+      goToProject,
+      getProjects,
     };
   },
 };
@@ -169,7 +213,7 @@ export default {
   color: white;
 }
 
-.q-dialog__inner.flex>.q-card {
+.q-dialog__inner.flex > .q-card {
   width: 250px;
   margin-bottom: 205px;
 }
@@ -182,7 +226,7 @@ export default {
   color: white;
 }
 
-.avatar-dialog-title>span {
+.avatar-dialog-title > span {
   margin-left: 10px;
 }
 

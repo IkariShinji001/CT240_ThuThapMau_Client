@@ -55,9 +55,9 @@ class UserService {
   async updateUserImage(user_id, image) {
     const formData = new FormData();
     formData.append("file", image);
-    return await api.patch(`${this.userPath}/${user_id}/image`, formData, {
+    return (await api.patch(`${this.userPath}/${user_id}/image`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
-    }).data;
+    })).data;
   }
 }
 
