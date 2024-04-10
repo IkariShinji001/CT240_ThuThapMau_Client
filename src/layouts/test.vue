@@ -44,7 +44,6 @@
       </div>
     </div>
 
-    <!-- <<<<<< DIALOG 1>>>>>> ------- -->
     <q-dialog v-model="openWatch">
       <q-card class="card-add">
         <h3>{{ collectionForm.collection_form_name }}</h3>
@@ -122,11 +121,11 @@
         <q-btn class="q-btn-submit" @click="showNotif"> Nộp </q-btn>
       </q-card>
     </q-dialog>
+
   </q-page>
 </template>
 
 <script>
-import { useRoute } from "vue-router";
 import { ref, onBeforeMount } from "vue";
 import formService from "../services/form.service";
 import formValueService from "../services/formvalue.service";
@@ -138,8 +137,7 @@ import formatDate from "../util/formatDate";
 export default {
   setup() {
     const $q = useQuasar();
-    const route = useRoute()
-    const collectionFormId = route.params.id;
+    const collectionFormId = 1;
     const collectionForm = ref();
     const userId = ref();
     const listAttributes = ref([]);
@@ -149,6 +147,7 @@ export default {
     const listAttributeValue = ref([]);
     const file = ref([]);
     const listFilledForm = ref([]);
+    const groupedForms = new Map();
     const groupedFormsArray = ref([]);
     const selectedGroup = ref([]);
     const selectedGroupImgs = ref([]);
@@ -166,12 +165,10 @@ export default {
         collection_value: "",
       }));
 
-
       listFilledForm.value = await formValueService.getAllFormValue(
         collectionFormId
       );
 
-      const groupedForms = new Map();
       listFilledForm.value.forEach((form) => {
         const key = `${form.user_id}_${form.collection_form_id}_${form.submit_time}`;
         if (!groupedForms.has(key)) {
@@ -182,8 +179,7 @@ export default {
 
       groupedFormsArray.value = Array.from(groupedForms.values());
 
-      const userLogin = JSON.parse(localStorage.getItem("user"));
-      userId.value = userLogin.user_id;
+      userId.value = collectionForm.value.user.user_id;
     });
 
     function showNotif(isDone) {
@@ -212,7 +208,6 @@ export default {
       });
     }
 
-    
     async function submitHandler(callback) {
       for (let i = 0; i < listAttributes.value.length - 1; i++) {
         const attr = listAttributes.value[i];
@@ -234,15 +229,12 @@ export default {
           listAttributes.value[listAttributes.value.length - 1]
             .collection_attribute_id
         );
-
         for (let i = 0; i < file.value.length; i++) {
           fd.append("files", file.value[i]);
         }
-
         openFormFunc();
         const createdForm = await testCreateFormService.createValue(fd);
 
-        const groupedForms = new Map()
         listFilledForm.value = [...listFilledForm.value, ...createdForm];
         listFilledForm.value.forEach((form) => {
           const key = `${form.user_id}_${form.collection_form_id}_${form.submit_time}`;
@@ -251,8 +243,8 @@ export default {
           }
           groupedForms.get(key).push(form);
         });
+
         groupedFormsArray.value = Array.from(groupedForms.values());
-       
         if (callback) {
           callback();
         }
@@ -271,12 +263,6 @@ export default {
     }
     function openFormFunc() {
       openAdd.value = !openAdd.value;
-      inputValues.value = listAttributes.value.map(() => ({
-        collection_value: "",
-      }));
-
-      listAttributeValue.value = []
-      file.value = [];
     }
 
     function formatD(dateString) {
@@ -297,6 +283,7 @@ export default {
       openFormDetail,
       submitHandler,
       formatD,
+
       showNotif,
     };
   },
@@ -429,6 +416,9 @@ export default {
   max-width: min-content;
 }
 
+/* .card-container-img img {
+    flex: 40%;
+  } */
 .card-container-img > img {
   border-radius: 5px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
