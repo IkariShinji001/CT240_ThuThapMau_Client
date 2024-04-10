@@ -50,7 +50,7 @@
             </div>
             <div v-if="memberWaitToAdd.length > 0">
               <h3>Danh sách thành viên đang chọn</h3>
-              <div v-for="(userMail, i) in memberWaitToAdd" class="member-add">
+              <div v-for="(userMail, i) in memberWaitToAdd" class="member-add" :key="userMail.user_email">
                 <h3 class="user_mail">
                   {{ i + 1 + ". " + userMail.user_email }}
                 </h3>
@@ -134,6 +134,8 @@
             listUserIdAdd,
             projectId
           );
+
+          memberWaitToAdd.value = [];
           toast.success("Thêm thành công");
         } catch (error) {
           console.log(error);
@@ -174,7 +176,6 @@
             userEmailAdd.value = "";
             return;
           }
-
           toast.error("Không tồn tại email này");
           return;
         } catch (error) {
@@ -184,8 +185,9 @@
       };
 
       const handleRemoveUserFromListWait = (userMail) => {
+        const index = memberWaitToAdd.value.findIndex((user) => user.user_email === userMail);
         memberWaitToAdd.value.splice(
-          memberWaitToAdd.value.findIndex((user) => user === userMail),
+          index,
           1
         );
       };

@@ -2,7 +2,7 @@
   <q-page>
     <div class="wrapper" v-if="project">
       <div class="banner">
-        <img :src="project.project_image_url" />
+        <img class="img-banner" :src="project.project_image_url" />
         <p class="project_name">{{ project.project_name }}
           <br>
         <p class="status_text">Trạng thái: {{ project.project_status }}</p>
@@ -420,5 +420,12 @@
 
   .date-collection {
     font-weight: bold;
+  }
+
+  .img-banner {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    object-position: center;
   }
 </style>
