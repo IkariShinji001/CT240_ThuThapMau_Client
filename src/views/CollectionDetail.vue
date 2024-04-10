@@ -1,7 +1,10 @@
 <template>
   <q-page>
+    <div @click="goBackProject" class="go-back" v-if="collection && project">
+      <p class="project-name"><q-icon name="arrow_back_ios" class="go-back-icon"></q-icon>{{ project.project_name }}</p>
+    </div>
     <div class="container" v-if="collection && project">
-      <div class="header">
+      <div class="header" :style="`background-image: url(${collection.collection_image_url});`">
         <p class="collection_name">{{ collection.collection_name }}</p>
         <div class="header-info">
           <div class="owner">
@@ -23,19 +26,18 @@
             <q-icon class="icon-update" v-if="isOwner" name="settings" @click="openUpdateCollection"></q-icon>
           </div>
           <div class="btn-add-form">
-            <q-btn color="primary" class="btn-open-add" v-if="isOwner" @click="openCreateForm = true">Tạo Form cho đợt
+            <q-btn class="btn-open-add" v-if="isOwner" @click="openCreateForm = true">Tạo Form cho đợt
               thu thập</q-btn>
           </div>
         </div>
 
-        <q-separator size="5px" />
-
-        <div class="collection-container">
-          <q-input v-model="searchName" outlined label="Tìm theo tên của form" class="input"></q-input>
-          <div v-for="collectionForm in filterCollection" class="collectionForm"
-            @click="gotoDetail(collectionForm.collection_form_id)">
-            <div class="form_name">{{ collectionForm.collection_form_name }}</div>
-          </div>
+      </div>
+      <q-separator size="5px" />
+      <div class="collection-container">
+        <q-input v-model="searchName" outlined label="Tìm theo tên của form" class="input"></q-input>
+        <div v-for="collectionForm in filterCollection" class="collectionForm"
+          @click="gotoDetail(collectionForm.collection_form_id)">
+          <div class="form_name">{{ collectionForm.collection_form_name }}</div>
         </div>
       </div>
 
@@ -158,6 +160,11 @@
         openUpdate.value = true;
       }
 
+      const goBackProject = () => {
+        router.push({
+          path: `/projects/${project_id}`
+        })
+      }
 
       const handleUpdateCollection = async () => {
         $q.loading.show();
@@ -192,7 +199,8 @@
         openUpdate,
         collectionUpdate,
         openUpdateCollection,
-        handleUpdateCollection
+        handleUpdateCollection,
+        goBackProject
       }
     }
   }
@@ -211,6 +219,7 @@
   }
 
   .collection_name {
+    color: white;
     font-size: 49px;
 
   }
@@ -224,11 +233,12 @@
 
   .user_name {
     font-size: 20px;
-    color: #6f6f6fcc;
+    color: white;
     font-weight: bold;
   }
 
   .created_at {
+    color: white;
     font-size: 20px;
   }
 
@@ -241,11 +251,12 @@
   .btn-add-form {
     position: absolute;
     right: 5%;
-    top: 20px;
+    top: 95px;
+    background-color: white;
   }
 
   .btn-open-add {
-    padding: 20px;
+    padding: 10px;
   }
 
   .card {
@@ -280,6 +291,7 @@
 
   .date {
     font-size: 20px;
+    color: white;
   }
 
   .form_name {
@@ -296,7 +308,8 @@
     cursor: pointer;
     position: absolute;
     right: 5%;
-    top: 120px;
+    top: 200px;
+    color: white;
   }
 
   .icon-update:hover {
@@ -333,4 +346,28 @@
   .date-collection {
     font-weight: bold;
   }
+
+  .go-back-icon {
+    font-size: 30px;
+    font-weight: bold;
+  }
+
+  .go-back {
+    width: fit-content;
+    cursor: pointer;
+  }
+
+  .go-back:hover {
+    color: #1976D2;
+  }
+
+  .project-name {
+    font-size: 18px;
+  }
+
+  .header {
+    padding: 20px;
+    border-radius: 10px;
+  }
+
 </style>

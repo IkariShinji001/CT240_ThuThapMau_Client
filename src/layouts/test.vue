@@ -1,15 +1,9 @@
 <template>
   <q-page class="container-parent">
-    <div @click="goBackCollection" class="go-back" v-if="collection">
-      <p class="collection-name">
-        <q-icon name="arrow_back_ios" class="go-back-icon"></q-icon
-        >{{ collection.collection_name }}
-      </p>
-    </div>
     <div class="container" v-if="collectionForm">
       <div class="header">
-        <p class="header-title">
-          <q-icon name="assignment" class="header-title-icon"></q-icon
+        <p class="form-title">
+          <q-icon name="assignment" class="form-title-icon"></q-icon
           >{{ collectionForm.collection_form_name }}
         </p>
 
@@ -50,12 +44,9 @@
       </div>
     </div>
 
-    <!-- <<<<<< DIALOG 1>>>>>> ------- -->
     <q-dialog v-model="openWatch">
       <q-card class="card-add">
-        <p class="title-filled-form">
-          {{ collectionForm.collection_form_name }}
-        </p>
+        <h3>{{ collectionForm.collection_form_name }}</h3>
         <div v-for="(attr, idx) in selectedGroup" :key="idx" class="field-card">
           <q-field
             outlined
@@ -88,7 +79,7 @@
     <!-- <<<<<< DIALOG -2 >>>>>> ------- -->
     <q-dialog v-model="openAdd">
       <q-card class="card-add">
-        <p class="title-form-add">{{ collectionForm.collection_form_name }}</p>
+        <h3>{{ collectionForm.collection_form_name }}</h3>
         <div
           v-for="(attr, idx) in listAttributes"
           :key="idx"
@@ -130,26 +121,23 @@
         <q-btn class="q-btn-submit" @click="showNotif"> Nộp </q-btn>
       </q-card>
     </q-dialog>
+
   </q-page>
 </template>
 
 <script>
-import { useRoute } from "vue-router";
 import { ref, onBeforeMount } from "vue";
 import formService from "../services/form.service";
 import formValueService from "../services/formvalue.service";
 import attributeService from "../services/attribute.service";
-import collectionService from "../services/collection.service";
 import testCreateFormService from "../services/testCreateForm.service";
 import { useQuasar } from "quasar";
 import formatDate from "../util/formatDate";
-import router from "../router";
 
 export default {
   setup() {
     const $q = useQuasar();
-    const route = useRoute();
-    const collectionFormId = route.params.id;
+    const collectionFormId = 1;
     const collectionForm = ref();
     const userId = ref();
     const listAttributes = ref([]);
@@ -159,18 +147,12 @@ export default {
     const listAttributeValue = ref([]);
     const file = ref([]);
     const listFilledForm = ref([]);
+    const groupedForms = new Map();
     const groupedFormsArray = ref([]);
     const selectedGroup = ref([]);
     const selectedGroupImgs = ref([]);
-    const projectId = route.params.project_id;
-    const collection = ref();
-    const collectionId = route.params.collection_id;
 
     onBeforeMount(async () => {
-      collection.value = await collectionService.getCollectionById(
-        collectionId
-      );
-      console.log(collection.value.collection_name);
       collectionForm.value = await formService.getCollectionFormById(
         collectionFormId
       );
@@ -187,7 +169,6 @@ export default {
         collectionFormId
       );
 
-      const groupedForms = new Map();
       listFilledForm.value.forEach((form) => {
         const key = `${form.user_id}_${form.collection_form_id}_${form.submit_time}`;
         if (!groupedForms.has(key)) {
@@ -198,8 +179,7 @@ export default {
 
       groupedFormsArray.value = Array.from(groupedForms.values());
 
-      const userLogin = JSON.parse(localStorage.getItem("user"));
-      userId.value = userLogin.user_id;
+      userId.value = collectionForm.value.user.user_id;
     });
 
     function showNotif(isDone) {
@@ -249,15 +229,12 @@ export default {
           listAttributes.value[listAttributes.value.length - 1]
             .collection_attribute_id
         );
-
         for (let i = 0; i < file.value.length; i++) {
           fd.append("files", file.value[i]);
         }
-
         openFormFunc();
         const createdForm = await testCreateFormService.createValue(fd);
 
-        const groupedForms = new Map();
         listFilledForm.value = [...listFilledForm.value, ...createdForm];
         listFilledForm.value.forEach((form) => {
           const key = `${form.user_id}_${form.collection_form_id}_${form.submit_time}`;
@@ -266,8 +243,8 @@ export default {
           }
           groupedForms.get(key).push(form);
         });
-        groupedFormsArray.value = Array.from(groupedForms.values());
 
+        groupedFormsArray.value = Array.from(groupedForms.values());
         if (callback) {
           callback();
         }
@@ -275,12 +252,6 @@ export default {
         console.log(e);
       }
     }
-
-    const goBackCollection = () => {
-      router.push({
-        path: `/projects/${projectId}/collections/${collectionId}`,
-      });
-    };
 
     function openFormDetail(group) {
       selectedGroup.value = group;
@@ -292,12 +263,6 @@ export default {
     }
     function openFormFunc() {
       openAdd.value = !openAdd.value;
-      inputValues.value = listAttributes.value.map(() => ({
-        collection_value: "",
-      }));
-
-      listAttributeValue.value = [];
-      file.value = [];
     }
 
     function formatD(dateString) {
@@ -318,9 +283,8 @@ export default {
       openFormDetail,
       submitHandler,
       formatD,
+
       showNotif,
-      goBackCollection,
-      collection,
     };
   },
 };
@@ -345,17 +309,17 @@ export default {
   justify-content: space-between;
 }
 
-.header-title {
+.form-title {
   max-width: 600px;
   font-size: 32px;
   width: 80%;
   margin: 0 0;
-  white-space: wrap;
-  font-size: 36px;
-  color: rgb(90, 90, 90);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.header-title-icon {
+.form-title-icon {
   border-radius: 50%;
   background: rgb(90, 90, 90);
   color: white;
@@ -363,6 +327,10 @@ export default {
   margin-right: 15px;
 }
 
+.form-title {
+  font-size: 36px;
+  color: rgb(90, 90, 90);
+}
 
 /* -------- submit-list  -----------*/
 
@@ -448,36 +416,14 @@ export default {
   max-width: min-content;
 }
 
+/* .card-container-img img {
+    flex: 40%;
+  } */
 .card-container-img > img {
   border-radius: 5px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
   padding: 10px;
   width: 200px;
   height: 200px;
-}
-
-.title-form-add,
-.title-filled-form {
-  margin: 20px 0;
-  font-size: 30px;
-  font-weight: 600;
-}
-
-.go-back-icon {
-  font-size: 30px;
-  font-weight: bold;
-}
-
-.go-back {
-  width: fit-content;
-  cursor: pointer;
-}
-
-.go-back:hover {
-  color: #1976d2;
-}
-
-.collection-name {
-  font-size: 18px;
 }
 </style>

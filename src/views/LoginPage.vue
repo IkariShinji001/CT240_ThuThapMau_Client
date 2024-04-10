@@ -10,7 +10,7 @@
               <q-icon name="email" />
             </template>
           </q-input>
-          <q-input class="input" v-model="user.user_password" type="password" outlined label="Password">
+          <q-input class="input" v-model="user.user_password" type="password" outlined label="Password" @keyup.enter="handleLogin">
             <template v-slot:prepend>
               <q-icon name="password" />
             </template>

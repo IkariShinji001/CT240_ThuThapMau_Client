@@ -100,6 +100,13 @@ const router = createRouter({
       },
       component: () => import("../views/Signup.vue"),
     },
+    {
+      path: "/test",
+      meta: {
+        title: "Đăng ",
+      },
+      component: () => import("../layouts/test.vue"),
+    },
     // {
     //   path: '/:pathMatch(.*)*',
     //   name: 'notFound',
